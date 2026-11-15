@@ -1,22 +1,43 @@
 # Dependencias de Node.js
 node_modules/
 **/node_modules/
+.pnp
+.pnp.js
 
-# Caché y artefactos de Expo / React Native
+# Caché y artefactos de Expo / React Native / Metro
 .expo/
 **/.expo/
+.expo-shared/
+**/.expo-shared/
+.metro-health-check*
 dist/
 web-build/
 expo-env.d.ts
 
-# Archivos de sistema y logs
+# Compilaciones nativas locales (Android / iOS)
+android/
+ios/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Pruebas y cobertura
+coverage/
+*.lcov
+
+# Archivos de sistema, editores y logs
 .DS_Store
 Thumbs.db
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
+*.tsbuildinfo
 
-# Variables de entorno locales
+# Variables de entorno locales y secretos
 .env
 .env.local
 .env.*.local
