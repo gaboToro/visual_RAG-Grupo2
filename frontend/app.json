@@ -3,6 +3,7 @@
     "name": "Visual RAG - Triage & Postop Monitor",
     "slug": "visual-rag-grupo2",
     "version": "1.0.0",
+    "sdkVersion": "58.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "splash": {
