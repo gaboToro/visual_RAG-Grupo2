@@ -1,26 +1,14 @@
-/**
- * @file InMemoryPostOpRecordRepository.js
- * @description Adaptador de Infraestructura (Infrastructure Layer - DDD) que almacena en memoria
- * las Fichas Postoperatorias precargadas con los datos exactos del prototipo de Figma.
- */
-
 const { IPostOpRecordRepository } = require('../../domain/repositories/IPostOpRecordRepository');
 const { PostOpRecord } = require('../../domain/entities/PostOpRecord');
 
 class InMemoryPostOpRecordRepository extends IPostOpRecordRepository {
-  /**
-   * Inicializa el repositorio con las fichas postoperatorias de los pacientes demo.
-   */
+
   constructor() {
     super();
     this.recordsByPatient = new Map();
     this.seedInitialFigmaRecords();
   }
 
-  /**
-   * Precarga la Ficha Postoperatoria de Nelson Steven Casa y María Elena Quispe tal como aparecen
-   * en las Pantallas 02, 06 y 09 de Figma.
-   */
   seedInitialFigmaRecords() {
     const nelsonRecord = new PostOpRecord({
       id: 'rec-pat-1',
@@ -77,20 +65,10 @@ class InMemoryPostOpRecordRepository extends IPostOpRecordRepository {
     this.recordsByPatient.set('pat-2', mariaRecord);
   }
 
-  /**
-   * Busca la ficha postoperatoria por el ID del paciente.
-   * @param {string} patientId - ID del paciente.
-   * @returns {Promise<PostOpRecord|null>}
-   */
   async findByPatientId(patientId) {
     return this.recordsByPatient.get(patientId) || null;
   }
 
-  /**
-   * Guarda o actualiza la ficha postoperatoria en memoria.
-   * @param {PostOpRecord} record - Entidad PostOpRecord a guardar.
-   * @returns {Promise<PostOpRecord>}
-   */
   async save(record) {
     this.recordsByPatient.set(record.patientId, record);
     return record;

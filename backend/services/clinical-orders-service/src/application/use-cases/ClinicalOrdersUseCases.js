@@ -1,26 +1,11 @@
-/**
- * @file ClinicalOrdersUseCases.js
- * @description Capa de Aplicación (Application Layer - DDD) para la gestión de Fichas Postoperatorias
- * y Órdenes de Recuperación prescritas por el Médico Cirujano.
- */
-
 const { PostOpRecord } = require('../../domain/entities/PostOpRecord');
 
 class ClinicalOrdersUseCases {
-  /**
-   * Inicializa los casos de uso inyectando el repositorio de fichas postoperatorias.
-   * @param {import('../../domain/repositories/IPostOpRecordRepository').IPostOpRecordRepository} recordRepository
-   */
+
   constructor(recordRepository) {
     this.recordRepository = recordRepository;
   }
 
-  /**
-   * Caso de Uso 1: Obtiene las órdenes médicas y cronograma postoperatorio de un paciente
-   * (usado en las Pantallas 02, 06 y 09 de Figma).
-   * @param {string} patientId - Identificador del paciente.
-   * @returns {Promise<Object>} DTO de la Ficha Postoperatoria.
-   */
   async getPatientPostOpRecord(patientId) {
     let record = await this.recordRepository.findByPatientId(patientId);
     if (!record) {
@@ -51,13 +36,6 @@ class ClinicalOrdersUseCases {
     return record.toDTO();
   }
 
-  /**
-   * Caso de Uso 2: Guarda o actualiza la Ficha Postoperatoria de un paciente desde el Portal Médico
-   * (Pantalla 09: "Guardar Ficha Postoperatoria").
-   * @param {string} patientId - Identificador del paciente.
-   * @param {Object} payload - Datos del procedimiento, cronograma, prohibiciones, cuidados y medicamentos.
-   * @returns {Promise<Object>} DTO de la Ficha Postoperatoria actualizada.
-   */
   async savePatientPostOpRecord(patientId, payload) {
     let record = await this.recordRepository.findByPatientId(patientId);
     if (!record) {
