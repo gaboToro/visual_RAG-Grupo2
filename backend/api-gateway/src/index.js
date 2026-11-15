@@ -1,10 +1,3 @@
-/**
- * @file index.js
- * @description API Gateway (Puerto 4000) para la arquitectura de microservicios de Visual RAG.
- * Actúa como punto de entrada único para el Front-End en React Native (Expo), enrutando peticiones
- * hacia los 4 microservicios DDD y orquestando el flujo completo de Triaje Visual RAG + Farmacia.
- */
-
 const http = require('http');
 
 const SERVICES = {
@@ -14,11 +7,6 @@ const SERVICES = {
   PHARMACY: process.env.PHARMACY_URL || 'http://localhost:4004',
 };
 
-/**
- * Lee y parsea el cuerpo JSON de una petición HTTP entrante.
- * @param {import('http').IncomingMessage} req - Petición HTTP.
- * @returns {Promise<Object>} Objeto JSON parseado.
- */
 function parseRequestBody(req) {
   return new Promise((resolve) => {
     let raw = '';
@@ -36,13 +24,6 @@ function parseRequestBody(req) {
   });
 }
 
-/**
- * Realiza una llamada HTTP interna hacia uno de los microservicios del ecosistema DDD.
- * @param {string} targetUrl - URL completa del microservicio destino.
- * @param {string} method - Método HTTP (GET, POST, PUT, DELETE).
- * @param {Object} [body] - Cuerpo JSON opcional a enviar.
- * @returns {Promise<{ statusCode: number, data: Object }>} Respuesta del microservicio.
- */
 function forwardToMicroservice(targetUrl, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(targetUrl);
@@ -88,12 +69,6 @@ function forwardToMicroservice(targetUrl, method = 'GET', body = null) {
   });
 }
 
-/**
- * Envía una respuesta JSON al cliente móvil con cabeceras CORS habilitadas.
- * @param {import('http').ServerResponse} res - Respuesta HTTP.
- * @param {number} statusCode - Código de estado HTTP.
- * @param {Object} payload - Datos a enviar en JSON.
- */
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -104,18 +79,9 @@ function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
-/**
- * Orquesta el flujo principal de negocio de Visual RAG entre los microservicios:
- * 1. Obtiene la Ficha Postoperatoria subida por el doctor en Clinical-Orders-Service.
- * 2. Evalúa las fotos de la herida del paciente con el Dataset ML en Visual-RAG-Service.
- * 3. Recomienda los medicamentos e insumos a mejores precios en Pharmacy-Pricing-Service.
- * @param {Object} body - Datos de entrada del paciente (patientId, patientName, photos, postOpDay).
- * @returns {Promise<Object>} Resultado integrado con el reporte RAG y las ofertas de farmacia.
- */
 async function orchestrateFullVisualRagEvaluation(body) {
   const patientId = body.patientId || 'pat-1';
 
-  // Paso 1: Consultar la ficha postoperatoria prescrita por el médico cirujano
   const clinicalRes = await forwardToMicroservice(
     `${SERVICES.CLINICAL}/orders/${patientId}`,
     'GET'
@@ -124,7 +90,6 @@ async function orchestrateFullVisualRagEvaluation(body) {
   const postOpDay =
     body.postOpDay || doctorTreatment?.schedule?.currentDay || 79;
 
-  // Paso 2: Evaluar la foto de la herida con el microservicio Visual RAG (Dataset ML)
   const ragRes = await forwardToMicroservice(`${SERVICES.RAG}/evaluate`, 'POST', {
     patientId,
     patientName: body.patientName || doctorTreatment.patientName || 'Nelson Steven Casa',
@@ -136,7 +101,6 @@ async function orchestrateFullVisualRagEvaluation(body) {
 
   const report = ragRes.data?.report;
 
-  // Paso 3: Obtener la recomendación de medicamentos a mejores precios acorde al tratamiento y RAG
   const pharmacyRes = await forwardToMicroservice(
     `${SERVICES.PHARMACY}/recommendations`,
     'POST',
@@ -155,11 +119,6 @@ async function orchestrateFullVisualRagEvaluation(body) {
   };
 }
 
-/**
- * Inicia el servidor HTTP del API Gateway en el puerto indicado.
- * @param {number} [port=4000] - Puerto del API Gateway.
- * @returns {import('http').Server} Instancia del servidor HTTP.
- */
 function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
   const server = http.createServer(async (req, res) => {
     if (req.method === 'OPTIONS') {
@@ -171,13 +130,12 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
     const body = await parseRequestBody(req);
 
     try {
-      // Endpoint Orquestador: Evaluación integral de herida (RAG + Tratamiento Médico + Mejores Precios)
+
       if (req.method === 'POST' && pathname === '/api/triage/evaluate-wound') {
         const result = await orchestrateFullVisualRagEvaluation(body);
         return sendJson(res, 201, result);
       }
 
-      // Enrutamiento hacia Microservicio 1: Identity Service (/api/identity/*)
       if (pathname.startsWith('/api/identity')) {
         const subPath = pathname.replace('/api/identity', '') || '/';
         const response = await forwardToMicroservice(
@@ -188,7 +146,6 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
         return sendJson(res, response.statusCode, response.data);
       }
 
-      // Enrutamiento hacia Microservicio 2: Clinical Orders Service (/api/clinical/*)
       if (pathname.startsWith('/api/clinical')) {
         const subPath = pathname.replace('/api/clinical', '') || '/';
         const response = await forwardToMicroservice(
@@ -199,7 +156,6 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
         return sendJson(res, response.statusCode, response.data);
       }
 
-      // Enrutamiento hacia Microservicio 3: Visual RAG Service (/api/rag/*)
       if (pathname.startsWith('/api/rag')) {
         const subPath = pathname.replace('/api/rag', '') || '/';
         const response = await forwardToMicroservice(
@@ -210,7 +166,6 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
         return sendJson(res, response.statusCode, response.data);
       }
 
-      // Enrutamiento hacia Microservicio 4: Pharmacy Pricing Service (/api/pharmacy/*)
       if (pathname.startsWith('/api/pharmacy')) {
         const subPath = pathname.replace('/api/pharmacy', '') || '/';
         const response = await forwardToMicroservice(
@@ -221,7 +176,6 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
         return sendJson(res, response.statusCode, response.data);
       }
 
-      // Health Check global de la arquitectura de microservicios
       if (req.method === 'GET' && pathname === '/health') {
         return sendJson(res, 200, {
           gateway: 'visual-rag-api-gateway',
