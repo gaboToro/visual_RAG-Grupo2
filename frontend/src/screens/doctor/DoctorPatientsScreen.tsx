@@ -1,11 +1,3 @@
-/**
- * @file DoctorPatientsScreen.tsx
- * @description Implementación de la Pantalla 08 de Figma ("08. Doctor - Mis Pacientes" - nodo 1:532).
- * Muestra el encabezado "Mis Pacientes" con botón "+ Asignar", buscador por nombre/cédula/correo,
- * tarjetas de pacientes asignados ("Nelson Steven Casa" con borde teal activo y "María Elena Quispe"),
- * botón "Ficha Postoperatoria" y botón rojo "X" para desvincular paciente.
- */
-
 import React, { useState } from 'react';
 import {
   View,
@@ -24,9 +16,6 @@ import {
   UserAvatarCircleIcon,
 } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Gestión de Pacientes del Médico Cirujano (Pantalla 08 de Figma).
- */
 export function DoctorPatientsScreen(): React.JSX.Element {
   const {
     patients,
@@ -45,11 +34,6 @@ export function DoctorPatientsScreen(): React.JSX.Element {
   const [newCedula, setNewCedula] = useState<string>('');
   const [newBloodType, setNewBloodType] = useState<string>('O+');
 
-  /**
-   * Filtra los pacientes asignados al médico según el texto ingresado en el buscador
-   * (por nombre completo, número de cédula o correo electrónico).
-   * @returns {UserProfile[]} Lista de pacientes filtrados.
-   */
   function getFilteredPatients(): UserProfile[] {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return patients;
@@ -61,19 +45,11 @@ export function DoctorPatientsScreen(): React.JSX.Element {
     });
   }
 
-  /**
-   * Selecciona al paciente y navega directamente a la Pantalla 09 ("Ficha Postoperatoria").
-   * @param {string} patientId - ID del paciente seleccionado.
-   */
   function handleOpenPostOpRecord(patientId: string): void {
     setSelectedDoctorPatientId(patientId);
     setActiveDoctorTab('RECORD');
   }
 
-  /**
-   * Confirma y desvincula un paciente de la lista del médico (botón rojo "X").
-   * @param {UserProfile} patient - Paciente a desvincular.
-   */
   function handleRemovePatient(patient: UserProfile): void {
     Alert.alert(
       'Desvincular Paciente',
@@ -89,9 +65,6 @@ export function DoctorPatientsScreen(): React.JSX.Element {
     );
   }
 
-  /**
-   * Registra y asigna un nuevo paciente al médico cirujano desde el modal "+ Asignar".
-   */
   function handleConfirmAssignPatient(): void {
     if (!newFullName.trim() || !newEmail.trim() || !newCedula.trim()) {
       Alert.alert(
@@ -122,7 +95,7 @@ export function DoctorPatientsScreen(): React.JSX.Element {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Encabezado: "Mis Pacientes" + Botón "+ Asignar" (nodo 1:555) */}
+        { }
         <View style={styles.headerRow}>
           <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
             Mis Pacientes
@@ -137,7 +110,7 @@ export function DoctorPatientsScreen(): React.JSX.Element {
           </TouchableOpacity>
         </View>
 
-        {/* Barra de Búsqueda (nodo 1:559) */}
+        { }
         <View
           style={[
             styles.searchBar,
@@ -157,7 +130,7 @@ export function DoctorPatientsScreen(): React.JSX.Element {
           />
         </View>
 
-        {/* Tarjetas de Pacientes (nodos 1:564 y 1:580) */}
+        { }
         {filteredPatients.map((patient) => {
           const isSelected = patient.id === selectedDoctorPatientId;
 
@@ -173,7 +146,7 @@ export function DoctorPatientsScreen(): React.JSX.Element {
                 },
               ]}
             >
-              {/* Fila de Avatar + Nombre y Correo */}
+              { }
               <TouchableOpacity
                 style={styles.patientTopRow}
                 activeOpacity={0.8}
@@ -190,7 +163,7 @@ export function DoctorPatientsScreen(): React.JSX.Element {
                 </View>
               </TouchableOpacity>
 
-              {/* Badges de Cédula y Grupo Sanguíneo */}
+              { }
               <View style={styles.badgesRow}>
                 <View style={[styles.ciBadge, { backgroundColor: theme.surfaceMuted }]}>
                   <Text style={[styles.ciBadgeText, { color: theme.textSecondary }]}>
@@ -205,7 +178,7 @@ export function DoctorPatientsScreen(): React.JSX.Element {
                 </View>
               </View>
 
-              {/* Acciones: Botón "Ficha Postoperatoria" + Botón Rojo "X" */}
+              { }
               <View style={styles.actionsRow}>
                 <TouchableOpacity
                   style={[styles.fichaButton, { backgroundColor: theme.primary }]}
@@ -236,7 +209,7 @@ export function DoctorPatientsScreen(): React.JSX.Element {
         })}
       </ScrollView>
 
-      {/* Modal para Asignar Nuevo Paciente al Médico */}
+      { }
       <Modal
         visible={showAssignModal}
         transparent
