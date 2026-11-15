@@ -1,9 +1,3 @@
-/**
- * @file index.js
- * @description Punto de entrada del Microservicio 4: Pharmacy Pricing Service (Puerto 4004).
- * Recomienda medicamentos e insumos a mejores precios acorde al tratamiento médico y diagnóstico RAG.
- */
-
 const http = require('http');
 const {
   InMemoryMedicationRepository,
@@ -18,11 +12,6 @@ const {
   PharmacyPricingController,
 } = require('./infrastructure/http/PharmacyPricingController');
 
-/**
- * Parsea el cuerpo JSON de una petición HTTP.
- * @param {import('http').IncomingMessage} req - Petición HTTP.
- * @returns {Promise<Object>} Cuerpo parseado.
- */
 function parseRequestBody(req) {
   return new Promise((resolve) => {
     let raw = '';
@@ -40,11 +29,6 @@ function parseRequestBody(req) {
   });
 }
 
-/**
- * Inicia el servidor HTTP para el microservicio de Farmacia y Precios.
- * @param {number} [port=4004] - Puerto de escucha.
- * @returns {import('http').Server} Instancia del servidor HTTP.
- */
 function startPharmacyPricingService(port = process.env.PHARMACY_PORT || 4004) {
   const repository = new InMemoryMedicationRepository();
   const recommenderService = new BestPriceRecommenderService();
