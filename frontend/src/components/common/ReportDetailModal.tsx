@@ -1,10 +1,3 @@
-/**
- * @file ReportDetailModal.tsx
- * @description Implementación de la Pantalla 04 de Figma ("04. Paciente - Detalle Modal" - nodo 1:224).
- * Muestra el modal emergente "Reporte Clínico Oficial" con el folio, fotografías analizadas de la incisión,
- * evaluación de incisión, sugerencias clínicas, sello digital verificado Visual RAG y descarga en PDF.
- */
-
 import React from 'react';
 import {
   Modal,
@@ -24,9 +17,6 @@ import {
   DownloadPdfIcon,
 } from '../icons/FigmaIcons';
 
-/**
- * Componente Modal de Detalle del Reporte Clínico Oficial (Pantalla 04 de Figma).
- */
 export function ReportDetailModal(): React.JSX.Element | null {
   const { selectedReportForModal, setSelectedReportForModal, theme } = useApp();
 
@@ -34,16 +24,10 @@ export function ReportDetailModal(): React.JSX.Element | null {
     return null;
   }
 
-  /**
-   * Cierra el modal de detalle del reporte clínico.
-   */
   function handleCloseModal(): void {
     setSelectedReportForModal(null);
   }
 
-  /**
-   * Simula la generación y descarga del documento clínico oficial en formato PDF.
-   */
   function handleDownloadPdf(): void {
     if (!selectedReportForModal) return;
     Alert.alert(
@@ -75,7 +59,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
-            {/* Encabezado del Modal: Icono + "Reporte Clínico Oficial" + Botón X */}
+            { }
             <View style={styles.modalHeaderRow}>
               <View style={styles.modalTitleGroup}>
                 <View style={[styles.ribbonBadge, { backgroundColor: theme.primaryLight }]}>
@@ -97,7 +81,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
               </TouchableOpacity>
             </View>
 
-            {/* Bloque de Folio y Datos del Paciente (nodo 1:236) */}
+            { }
             <View
               style={[
                 styles.folioBox,
@@ -118,9 +102,9 @@ export function ReportDetailModal(): React.JSX.Element | null {
               </Text>
             </View>
 
-            {/* Galería de 2 Fotos Analizadas de la Incisión (nodos 1:241 y 1:246) */}
+            { }
             <View style={styles.photosRow}>
-              {/* Foto #1 */}
+              { }
               <View style={styles.photoCard}>
                 {customUris[0] && customUris[0].startsWith('http') ? (
                   <Image source={{ uri: customUris[0] }} style={styles.capturedImage} />
@@ -134,7 +118,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
                 </View>
               </View>
 
-              {/* Foto #2 */}
+              { }
               <View style={styles.photoCard}>
                 {customUris[1] && customUris[1].startsWith('http') ? (
                   <Image source={{ uri: customUris[1] }} style={styles.capturedImage} />
@@ -149,7 +133,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
               </View>
             </View>
 
-            {/* Sección EVALUACIÓN DE INCISIÓN (nodo 1:251) */}
+            { }
             <Text style={[styles.sectionHeaderLabel, { color: theme.textSecondary }]}>
               EVALUACIÓN DE INCISIÓN
             </Text>
@@ -174,7 +158,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
               </View>
             </View>
 
-            {/* Sección SUGERENCIAS CLÍNICAS (nodo 1:259) */}
+            { }
             <Text style={[styles.sectionHeaderLabel, { color: theme.textSecondary }]}>
               SUGERENCIAS CLÍNICAS
             </Text>
@@ -193,7 +177,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
               </Text>
             </View>
 
-            {/* Sello Documento Clínico Digital Verificado • Visual RAG (nodo 1:264) */}
+            { }
             <View
               style={[
                 styles.verifiedBanner,
@@ -209,7 +193,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
               </Text>
             </View>
 
-            {/* Botón Descargar Reporte en PDF (nodo 1:268) */}
+            { }
             <TouchableOpacity
               style={[styles.downloadPdfButton, { backgroundColor: theme.primary }]}
               activeOpacity={0.85}
@@ -222,7 +206,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
             </TouchableOpacity>
           </ScrollView>
 
-          {/* Barra Home Indicator en la base del Modal */}
+          { }
           <View style={styles.homeIndicatorContainer}>
             <View style={styles.homeIndicator} />
           </View>
