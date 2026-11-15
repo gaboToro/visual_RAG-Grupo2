@@ -1,9 +1,3 @@
-/**
- * @file DoctorBottomBar.tsx
- * @description Barra de navegación inferior de 3 pestañas para el Portal Médico
- * (Pacientes, Ficha, Perfil) basada en el nodo Figma 1:596.
- */
-
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useApp } from '../../context/AppContext';
@@ -25,25 +19,19 @@ const DOCTOR_TABS: DoctorTabConfig[] = [
   { key: 'PROFILE', label: 'Perfil' },
 ];
 
-/**
- * Renderiza el icono vectorial correspondiente a cada pestaña del Portal Médico.
- * @param {DoctorTab} tabKey - Identificador de la pestaña del doctor.
- * @param {string} color - Color activo (#0D9488) o inactivo (#64748B).
- */
 function renderDoctorTabIcon(tabKey: DoctorTab, color: string): React.JSX.Element {
   switch (tabKey) {
     case 'PATIENTS':
       return <TabDoctorPatientsIcon color={color} />;
     case 'RECORD':
+    case 'RESTRICTIONS':
       return <TabOrdersIcon color={color} />;
     case 'PROFILE':
+    default:
       return <TabProfileIcon color={color} />;
   }
 }
 
-/**
- * Componente de barra de navegación inferior para el Médico Cirujano.
- */
 export function DoctorBottomBar(): React.JSX.Element {
   const { activeDoctorTab, setActiveDoctorTab, theme } = useApp();
 
@@ -88,7 +76,7 @@ export function DoctorBottomBar(): React.JSX.Element {
         })}
       </View>
 
-      {/* Barra indicadora inferior (Home Indicator 134x5 de Figma) */}
+      { }
       <View style={styles.homeIndicatorWrapper}>
         <View style={styles.homeIndicatorBar} />
       </View>
