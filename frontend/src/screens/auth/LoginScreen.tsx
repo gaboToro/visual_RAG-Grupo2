@@ -1,11 +1,3 @@
-/**
- * @file LoginScreen.tsx
- * @description Implementación de la Pantalla 01 de Figma ("01. Login Screen" - nodo 1:6).
- * Incluye el logo circular Visual RAG, subtítulo "TRIAGE & POSTOP MONITOR", selector segmentado
- * entre "Paciente" y "Médico Cirujano", formulario de correo/contraseña, recuadro de credenciales
- * demo y botón "Ingresar al Portal".
- */
-
 import React, { useState } from 'react';
 import {
   View,
@@ -22,9 +14,6 @@ import { useApp } from '../../context/AppContext';
 import { UserRole } from '../../types';
 import { LoginCrosshairLogo } from '../../components/icons/FigmaIcons';
 
-/**
- * Renderiza la barra de estado móvil (44px) en la pantalla de Login según el nodo Figma 1:7.
- */
 function LoginStatusBar({ color }: { color: string }): React.JSX.Element {
   return (
     <View style={styles.statusBar}>
@@ -72,9 +61,6 @@ function LoginStatusBar({ color }: { color: string }): React.JSX.Element {
   );
 }
 
-/**
- * Pantalla de Inicio de Sesión de Visual RAG (Pantalla 01 de Figma).
- */
 export function LoginScreen(): React.JSX.Element {
   const { login, theme } = useApp();
 
@@ -83,11 +69,6 @@ export function LoginScreen(): React.JSX.Element {
   const [password, setPassword] = useState<string>('nelson123');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  /**
-   * Cambia el rol seleccionado entre "Paciente" y "Médico Cirujano" y autocompleta
-   * las credenciales de demostración correspondientes.
-   * @param {UserRole} role - Rol elegido por el usuario.
-   */
   function handleSelectRole(role: UserRole): void {
     setSelectedRole(role);
     if (role === 'PATIENT') {
@@ -99,9 +80,6 @@ export function LoginScreen(): React.JSX.Element {
     }
   }
 
-  /**
-   * Ejecuta la autenticación contra el servicio de identidad y redirige al portal correspondiente.
-   */
   async function handleLoginSubmit(): Promise<void> {
     setIsSubmitting(true);
     try {
@@ -123,7 +101,7 @@ export function LoginScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Sección de Marca y Logo (nodo 1:19) */}
+        { }
         <View style={styles.brandSection}>
           <LoginCrosshairLogo />
           <Text style={[styles.brandTitle, { color: theme.textPrimary }]}>
@@ -134,7 +112,7 @@ export function LoginScreen(): React.JSX.Element {
           </Text>
         </View>
 
-        {/* Tarjeta del Formulario de Inicio de Sesión (nodo 1:25) */}
+        { }
         <View
           style={[
             styles.loginCard,
@@ -144,7 +122,7 @@ export function LoginScreen(): React.JSX.Element {
             },
           ]}
         >
-          {/* Selector Segmentado de Rol: Paciente vs Médico Cirujano (nodo 1:26) */}
+          { }
           <View
             style={[
               styles.roleToggleContainer,
@@ -206,7 +184,7 @@ export function LoginScreen(): React.JSX.Element {
             </TouchableOpacity>
           </View>
 
-          {/* Campo Correo Electrónico (nodos 1:31 y 1:32) */}
+          { }
           <Text style={[styles.inputLabel, { color: theme.textPrimary }]}>
             Correo Electrónico:
           </Text>
@@ -230,7 +208,7 @@ export function LoginScreen(): React.JSX.Element {
             />
           </View>
 
-          {/* Campo Contraseña (nodos 1:34 y 1:35) */}
+          { }
           <Text style={[styles.inputLabel, { color: theme.textPrimary }]}>
             Contraseña:
           </Text>
@@ -253,7 +231,7 @@ export function LoginScreen(): React.JSX.Element {
             />
           </View>
 
-          {/* Recuadro de Credenciales Demo (nodo 1:37) */}
+          { }
           <View
             style={[
               styles.demoBox,
@@ -275,7 +253,7 @@ export function LoginScreen(): React.JSX.Element {
             </Text>
           </View>
 
-          {/* Botón Ingresar al Portal (nodo 1:40) */}
+          { }
           <TouchableOpacity
             style={[styles.submitButton, { backgroundColor: theme.primary }]}
             activeOpacity={0.85}
@@ -289,7 +267,7 @@ export function LoginScreen(): React.JSX.Element {
         </View>
       </ScrollView>
 
-      {/* Home Indicator inferior (nodo 1:42) */}
+      { }
       <View style={styles.homeIndicatorBarWrapper}>
         <View style={styles.homeIndicatorBar} />
       </View>
