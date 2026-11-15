@@ -1,0 +1,25 @@
+{
+  "name": "visual-rag-backend-microservices",
+  "version": "1.0.0",
+  "description": "Backend con Arquitectura de Microservicios y Domain-Driven Design (DDD) para Visual RAG",
+  "main": "start-all.js",
+  "scripts": {
+    "start": "node start-all.js",
+    "start:gateway": "node api-gateway/src/index.js",
+    "start:identity": "node services/identity-service/src/index.js",
+    "start:clinical": "node services/clinical-orders-service/src/index.js",
+    "start:rag": "node services/visual-rag-service/src/index.js",
+    "start:pharmacy": "node services/pharmacy-pricing-service/src/index.js",
+    "test": "node test-microservices.js"
+  },
+  "keywords": [
+    "visual-rag",
+    "ddd",
+    "microservices",
+    "postoperative-triage",
+    "machine-learning",
+    "pharmacy-recommendation"
+  ],
+  "author": "Grupo 2 - Visual RAG",
+  "license": "MIT"
+}
