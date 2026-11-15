@@ -1,9 +1,3 @@
-/**
- * @file apiClient.ts
- * @description Cliente HTTP para comunicar el Front-End de React Native (Expo) con el API Gateway
- * de Microservicios DDD (`http://localhost:4000`), incluyendo respaldo local resiliente.
- */
-
 import {
   UserProfile,
   UserRole,
@@ -14,12 +8,6 @@ import {
 
 const API_GATEWAY_URL = 'http://localhost:4000';
 
-/**
- * Ejecuta una petición fetch con tiempo de espera (timeout) hacia el API Gateway.
- * @param {string} endpoint - Ruta relativa dentro del API Gateway (ej. "/api/identity/login").
- * @param {RequestInit} [options] - Opciones de configuración HTTP.
- * @returns {Promise<any>} Respuesta JSON del microservicio correspondiente.
- */
 async function fetchWithTimeout(endpoint: string, options: RequestInit = {}): Promise<any> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 2500);
@@ -44,13 +32,6 @@ async function fetchWithTimeout(endpoint: string, options: RequestInit = {}): Pr
   }
 }
 
-/**
- * Autentica un usuario contra el Microservicio de Identidad (`/api/identity/login`).
- * @param {string} email - Correo electrónico ingresado.
- * @param {string} password - Contraseña ingresada.
- * @param {UserRole} role - Rol seleccionado ('PATIENT' o 'DOCTOR').
- * @returns {Promise<UserProfile|null>} Perfil del usuario si el backend está disponible, o null para usar estado local.
- */
 export async function loginViaGateway(
   email: string,
   password: string,
@@ -67,13 +48,6 @@ export async function loginViaGateway(
   }
 }
 
-/**
- * Envía las fotografías de la herida postoperatoria al endpoint orquestador del API Gateway
- * (`/api/triage/evaluate-wound`), el cual consulta la Ficha del Doctor, evalúa con el Dataset ML (RAG)
- * y obtiene los mejores precios de medicamentos en Farmacias.
- * @param {Object} params - Datos de la evaluación de herida.
- * @returns {Promise<{ report: WoundReportDTO; pharmacyRecommendation: PharmacyRecommendationDTO } | null>}
- */
 export async function evaluateWoundViaGateway(params: {
   patientId: string;
   patientName: string;
@@ -97,12 +71,6 @@ export async function evaluateWoundViaGateway(params: {
   }
 }
 
-/**
- * Guarda la Ficha Postoperatoria actualizada por el médico en el Microservicio de Órdenes Clínicas.
- * @param {string} patientId - ID del paciente.
- * @param {Partial<PostOpRecordDTO>} payload - Datos actualizados de la ficha.
- * @returns {Promise<PostOpRecordDTO | null>}
- */
 export async function savePostOpRecordViaGateway(
   patientId: string,
   payload: Record<string, any>
