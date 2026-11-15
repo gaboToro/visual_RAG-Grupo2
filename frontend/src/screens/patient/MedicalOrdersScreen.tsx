@@ -1,11 +1,3 @@
-/**
- * @file MedicalOrdersScreen.tsx
- * @description Implementación de la Pantalla 06 de Figma ("06. Paciente - Órdenes Médicas" - nodo 1:361).
- * Muestra las "Órdenes de Recuperación" con el cronograma de la cirugía ("Correcion Neuronal",
- * "Inicio: 2026-08-19", métricas DÍA ACTUAL, REPOSO TOTAL, DÍAS RESTANTES), la tarjeta de
- * "Acciones Prohibidas" y la tarjeta de "Cuidados Permitidos".
- */
-
 import React from 'react';
 import {
   View,
@@ -23,9 +15,6 @@ import {
   AllowedCareIcon,
 } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Órdenes Médicas de Recuperación del Paciente (Pantalla 06 de Figma).
- */
 export function MedicalOrdersScreen(): React.JSX.Element {
   const { currentUser, postOpRecords, theme } = useApp();
 
@@ -33,9 +22,6 @@ export function MedicalOrdersScreen(): React.JSX.Element {
   const record = postOpRecords[patientId] || postOpRecords['pat-1'];
   const { schedule, prohibitedActions, allowedCares } = record;
 
-  /**
-   * Sincroniza las órdenes médicas con la última Ficha Postoperatoria guardada por el Doctor.
-   */
   function handleRefreshOrders(): void {
     Alert.alert(
       'Órdenes Médicas Actualizadas',
@@ -49,7 +35,7 @@ export function MedicalOrdersScreen(): React.JSX.Element {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Encabezado: "Órdenes de Recuperación" + Botón Refrescar (nodo 1:382) */}
+      { }
       <View style={styles.headerRow}>
         <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
           Órdenes de Recuperación
@@ -63,7 +49,7 @@ export function MedicalOrdersScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Tarjeta 1: Cronograma Quirúrgico (nodo 1:386) */}
+      { }
       <View
         style={[
           styles.card,
@@ -93,7 +79,7 @@ export function MedicalOrdersScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Barra de Progreso (nodos 1:395 y 1:396) */}
+        { }
         <View style={[styles.progressTrack, { backgroundColor: theme.surfaceMuted }]}>
           <View
             style={[
@@ -106,7 +92,7 @@ export function MedicalOrdersScreen(): React.JSX.Element {
           />
         </View>
 
-        {/* 3 Cajas de Métricas: DÍA ACTUAL / REPOSO TOTAL / DÍAS RESTANTES (nodos 1:397, 1:400, 1:403) */}
+        { }
         <View style={styles.metricsRow}>
           <View
             style={[
@@ -161,7 +147,7 @@ export function MedicalOrdersScreen(): React.JSX.Element {
         </View>
       </View>
 
-      {/* Tarjeta 2: Acciones Prohibidas (nodo 1:406) */}
+      { }
       <View
         style={[
           styles.card,
@@ -197,7 +183,7 @@ export function MedicalOrdersScreen(): React.JSX.Element {
         ))}
       </View>
 
-      {/* Tarjeta 3: Cuidados Permitidos (nodo 1:418) */}
+      { }
       <View
         style={[
           styles.card,
