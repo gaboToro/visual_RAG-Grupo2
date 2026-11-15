@@ -1,14 +1,5 @@
-/**
- * @file PostOpWoundDataset.js
- * @description Base de Conocimiento y Dataset de Machine Learning (Infrastructure Layer - DDD)
- * utilizado por el motor Visual RAG para recuperar casos clínicos similares de heridas postoperatorias.
- */
-
 class PostOpWoundDataset {
-  /**
-   * Inicializa el dataset clínico etiquetado con vectores de características visuales (embeddings)
-   * y protocolos médicos validados para heridas quirúrgicas.
-   */
+
   constructor() {
     this.entries = [
       {
@@ -53,13 +44,6 @@ class PostOpWoundDataset {
     ];
   }
 
-  /**
-   * Recupera los K casos clínicos más similares del dataset de Machine Learning empleando
-   * búsqueda vectorial por similitud de coseno (Retrieval Step del pipeline RAG).
-   * @param {import('../../domain/value-objects/VisualEmbedding').VisualEmbedding} queryEmbedding - Vector de la foto del paciente.
-   * @param {number} [topK=2] - Cantidad de documentos/casos clínicos a recuperar.
-   * @returns {Array<Object>} Casos del dataset ordenados de mayor a menor similitud.
-   */
   retrieveSimilarClinicalCases(queryEmbedding, topK = 2) {
     const scoredEntries = this.entries.map((entry) => ({
       ...entry,
