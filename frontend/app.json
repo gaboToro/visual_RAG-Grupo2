@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Visual RAG - Triage & Postop Monitor",
+    "slug": "visual-rag-grupo2",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#F8FAFC"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Visual RAG requiere acceso a la cámara para tomar de 1 a 4 fotografías de tu incisión postoperatoria.",
+        "NSPhotoLibraryUsageDescription": "Visual RAG requiere acceso a tu galería para subir fotografías de tu herida postoperatoria."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#CCFBF1"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
