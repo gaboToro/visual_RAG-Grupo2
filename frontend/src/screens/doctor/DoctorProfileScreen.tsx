@@ -1,12 +1,3 @@
-/**
- * @file DoctorProfileScreen.tsx
- * @description Implementación de la Pantalla 10 de Figma ("10. Doctor - Perfil Profesional" - nodo 1:707).
- * Muestra "Perfil y Configuración", tarjeta profesional ("Dr. Nelson Casa", "nelson.doctor@gmail.com",
- * badges "Reg: MSP-178942" y "H. Metropolitano"), tarjeta "Modo de Visualización", formulario de
- * "Datos Profesionales" ("Especialidad: Cirugía General y Laparoscópica", "Hospital / Clínica: Hospital Metropolitano",
- * botón "Guardar Datos Profesionales") y botón rojo "Cerrar Sesión".
- */
-
 import React, { useState } from 'react';
 import {
   View,
@@ -23,9 +14,6 @@ import {
   ThemeModeIcon,
 } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Perfil Profesional y Configuración del Médico Cirujano (Pantalla 10 de Figma).
- */
 export function DoctorProfileScreen(): React.JSX.Element {
   const {
     doctorProfile,
@@ -43,9 +31,6 @@ export function DoctorProfileScreen(): React.JSX.Element {
     doctorProfile.clinicalInfo.hospital || 'Hospital Metropolitano'
   );
 
-  /**
-   * Guarda los cambios realizados en los Datos Profesionales del médico cirujano.
-   */
   function handleSaveProfessionalData(): void {
     updateDoctorProfessionalInfo(specialty, hospital);
     Alert.alert(
@@ -60,12 +45,12 @@ export function DoctorProfileScreen(): React.JSX.Element {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Título de Sección (nodo 1:728) */}
+      { }
       <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
         Perfil y Configuración
       </Text>
 
-      {/* Tarjeta de Resumen del Médico Cirujano (nodo 1:729) */}
+      { }
       <View
         style={[
           styles.summaryCard,
@@ -101,7 +86,7 @@ export function DoctorProfileScreen(): React.JSX.Element {
         </View>
       </View>
 
-      {/* Tarjeta Modo de Visualización (nodo 1:740) */}
+      { }
       <View
         style={[
           styles.themeCard,
@@ -134,7 +119,7 @@ export function DoctorProfileScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Tarjeta Datos Profesionales (nodo 1:749) */}
+      { }
       <View
         style={[
           styles.formCard,
@@ -201,7 +186,7 @@ export function DoctorProfileScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Botón Cerrar Sesión (nodo 1:760) */}
+      { }
       <TouchableOpacity
         style={[
           styles.logoutBtn,
