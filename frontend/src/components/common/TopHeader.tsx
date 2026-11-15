@@ -1,9 +1,3 @@
-/**
- * @file TopHeader.tsx
- * @description Barra superior reutilizable para el Portal Paciente (nodo Figma 1:62)
- * y el Portal Médico (nodo Figma 1:545), incluyendo la barra de estado superior (9:41).
- */
-
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
@@ -17,9 +11,6 @@ interface TopHeaderProps {
   role: 'PATIENT' | 'DOCTOR';
 }
 
-/**
- * Renderiza los iconos de señal, Wi-Fi y batería de la barra de estado móvil (44px) según Figma.
- */
 function StatusBarIcons({ color }: { color: string }): React.JSX.Element {
   return (
     <View style={styles.statusRightRow}>
@@ -64,12 +55,6 @@ function StatusBarIcons({ color }: { color: string }): React.JSX.Element {
   );
 }
 
-/**
- * Renderiza el encabezado principal del Portal Paciente o del Portal Médico.
- * - En modo Paciente: muestra "PORTAL PACIENTE", nombre del paciente ("Nelson Steven Casa") y badge "Día 79".
- * - En modo Médico: muestra "PORTAL MÉDICO", nombre del doctor ("Dr. Nelson Casa") y badge "1 Paciente".
- * @param {TopHeaderProps} props - Propiedades del encabezado.
- */
 export function TopHeader({ role }: TopHeaderProps): React.JSX.Element {
   const { currentUser, postOpRecords, patients, doctorProfile, theme } = useApp();
 
@@ -96,13 +81,13 @@ export function TopHeader({ role }: TopHeaderProps): React.JSX.Element {
         },
       ]}
     >
-      {/* Barra de estado móvil (44px) idéntica al prototipo de Figma */}
+      { }
       <View style={styles.statusBar}>
         <Text style={[styles.statusTime, { color: theme.textPrimary }]}>9:41</Text>
         <StatusBarIcons color={theme.textPrimary} />
       </View>
 
-      {/* Contenedor TopHeader (64px) */}
+      { }
       <View style={styles.headerContainer}>
         <View style={styles.leftRow}>
           {isPatient ? <PatientHeaderHeartIcon /> : <DoctorHeaderScopeIcon size={40} />}
