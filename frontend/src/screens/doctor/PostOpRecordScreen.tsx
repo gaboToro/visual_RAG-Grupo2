@@ -1,0 +1,672 @@
+/**
+ * @file PostOpRecordScreen.tsx
+ * @description Implementación de la Pantalla 09 de Figma ("09. Doctor - Ficha Postoperatoria" - nodo 1:615).
+ * Permite al Médico Cirujano seleccionar al paciente ("PACIENTE SELECCIONADO: Nelson Steven Casa"),
+ * editar las 4 secciones de la Ficha Postoperatoria:
+ *   1. Cirugía & Cronograma ("Correcion Neuronal • 10 días")
+ *   2. Acciones Prohibidas ("2 indicación(es) registrada(s)")
+ *   3. Cuidados & Curaciones ("1 indicación(es) registrada(s)")
+ *   4. Alergias & Urgencias ("Configurar signos de alerta")
+ * y guardar los cambios con el botón "Guardar Ficha Postoperatoria".
+ */
+
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import { useApp } from '../../context/AppContext';
+import {
+  UserAvatarCircleIcon,
+  SurgeryCalendarIcon,
+  ProhibitedActionIcon,
+  AllowedCareIcon,
+  AlertTriangleIcon,
+} from '../../components/icons/FigmaIcons';
+
+/**
+ * Pantalla de Edición de la Ficha Postoperatoria por el Médico Cirujano (Pantalla 09 de Figma).
+ */
+export function PostOpRecordScreen(): React.JSX.Element {
+  const {
+    patients,
+    selectedDoctorPatientId,
+    setSelectedDoctorPatientId,
+    postOpRecords,
+    saveDoctorPostOpRecord,
+    theme,
+  } = useApp();
+
+  const currentPatient =
+    patients.find((p) => p.id === selectedDoctorPatientId) || patients[0];
+  const activeRecord =
+    postOpRecords[currentPatient?.id || 'pat-1'] || postOpRecords['pat-1'];
+
+  // Estado de qué secciones del acordeón están expandidas (por defecto la sección 1 como en Figma)
+  const [expandedSection, setExpandedSection] = useState<number>(1);
+
+  // Campos editables de la Ficha Postoperatoria
+  const [procedureName, setProcedureName] = useState<string>(
+    activeRecord.schedule.procedureName
+  );
+  const [surgeryDate, setSurgeryDate] = useState<string>(
+    activeRecord.schedule.surgeryDate
+  );
+  const [totalRestDays, setTotalRestDays] = useState<string>(
+    String(activeRecord.schedule.totalRestDays)
+  );
+  const [prohibitedList, setProhibitedList] = useState<string[]>(
+    activeRecord.prohibitedActions
+  );
+  const [allowedCaresList, setAllowedCaresList] = useState<string[]>(
+    activeRecord.allowedCares
+  );
+  const [allergiesList, setAllergiesList] = useState<string[]>(
+    activeRecord.allergiesAndAlerts
+  );
+  const [newProhibitedText, setNewProhibitedText] = useState<string>('');
+  const [newCareText, setNewCareText] = useState<string>('');
+  const [newAllergyText, setNewAllergyText] = useState<string>('');
+
+  useEffect(() => {
+    setProcedureName(activeRecord.schedule.procedureName);
+    setSurgeryDate(activeRecord.schedule.surgeryDate);
+    setTotalRestDays(String(activeRecord.schedule.totalRestDays));
+    setProhibitedList(activeRecord.prohibitedActions);
+    setAllowedCaresList(activeRecord.allowedCares);
+    setAllergiesList(activeRecord.allergiesAndAlerts);
+  }, [selectedDoctorPatientId, activeRecord]);
+
+  /**
+   * Alterna entre los pacientes asignados al médico cuando presiona el botón "Cambiar v".
+   */
+  function handleCycleSelectedPatient(): void {
+    if (patients.length <= 1) return;
+    const currentIndex = patients.findIndex((p) => p.id === currentPatient.id);
+    const nextIndex = (currentIndex + 1) % patients.length;
+    setSelectedDoctorPatientId(patients[nextIndex].id);
+  }
+
+  /**
+   * Abre o cierra una de las 4 secciones del acordeón de la Ficha Postoperatoria.
+   * @param {number} sectionNumber - Número de sección (1 a 4).
+   */
+  function handleToggleSection(sectionNumber: number): void {
+    setExpandedSection((prev) => (prev === sectionNumber ? 0 : sectionNumber));
+  }
+
+  /**
+   * Añade una nueva acción prohibida a la sección 2.
+   */
+  function handleAddProhibitedAction(): void {
+    if (!newProhibitedText.trim()) return;
+    setProhibitedList((prev) => [...prev, newProhibitedText.trim()]);
+    setNewProhibitedText('');
+  }
+
+  /**
+   * Añade un nuevo cuidado permitido a la sección 3.
+   */
+  function handleAddAllowedCare(): void {
+    if (!newCareText.trim()) return;
+    setAllowedCaresList((prev) => [...prev, newCareText.trim()]);
+    setNewCareText('');
+  }
+
+  /**
+   * Añade un signo de alerta o alergia a la sección 4.
+   */
+  function handleAddAllergyAlert(): void {
+    if (!newAllergyText.trim()) return;
+    setAllergiesList((prev) => [...prev, newAllergyText.trim()]);
+    setNewAllergyText('');
+  }
+
+  /**
+   * Guarda la Ficha Postoperatoria en el microservicio de Órdenes Clínicas y sincroniza el Portal Paciente.
+   */
+  async function handleSavePostOpFicha(): Promise<void> {
+    await saveDoctorPostOpRecord(currentPatient.id, {
+      procedureName: procedureName.trim() || 'Correcion Neuronal',
+      surgeryDate: surgeryDate.trim() || '2026-08-19',
+      totalRestDays: Number(totalRestDays) || 10,
+      prohibitedActions: prohibitedList,
+      allowedCares: allowedCaresList,
+      allergiesAndAlerts: allergiesList,
+    });
+
+    Alert.alert(
+      'Ficha Postoperatoria Guardada',
+      `El plan quirúrgico de ${currentPatient.fullName} se ha actualizado y sincronizado con el motor Visual RAG y Farmacia.`
+    );
+  }
+
+  return (
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.background }]}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Título de Sección (nodo 1:636) */}
+      <Text style={[styles.screenTitle, { color: theme.textPrimary }]}>
+        Ficha Postoperatoria
+      </Text>
+
+      {/* Selector de Paciente Seleccionado (nodo 1:637) */}
+      <View
+        style={[
+          styles.patientSelectorCard,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        <View style={styles.selectorLeftRow}>
+          <UserAvatarCircleIcon size={40} />
+          <View style={styles.selectorTextCol}>
+            <Text style={[styles.selectorLabel, { color: theme.textSecondary }]}>
+              PACIENTE SELECCIONADO
+            </Text>
+            <Text style={[styles.selectorPatientName, { color: theme.textPrimary }]}>
+              {currentPatient?.fullName || 'Nelson Steven Casa'}
+            </Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.changePatientBtn, { backgroundColor: theme.primaryLight }]}
+          activeOpacity={0.8}
+          onPress={handleCycleSelectedPatient}
+        >
+          <Text style={[styles.changePatientBtnText, { color: theme.primary }]}>
+            Cambiar v
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Sección 1: 1. Cirugía & Cronograma (nodo 1:648) */}
+      <View
+        style={[
+          styles.accordionCard,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.accordionHeaderRow}
+          activeOpacity={0.8}
+          onPress={() => handleToggleSection(1)}
+        >
+          <View style={styles.accordionLeftRow}>
+            <SurgeryCalendarIcon size={34} />
+            <View style={styles.accordionTitleCol}>
+              <Text style={[styles.accordionTitle, { color: theme.textPrimary }]}>
+                1. Cirugía & Cronograma
+              </Text>
+              <Text style={[styles.accordionSubtitle, { color: theme.primary }]}>
+                {procedureName} • {totalRestDays} días
+              </Text>
+            </View>
+          </View>
+
+          <Text style={[styles.chevronText, { color: theme.primary }]}>
+            {expandedSection === 1 ? '^' : 'v'}
+          </Text>
+        </TouchableOpacity>
+
+        {expandedSection === 1 && (
+          <View style={styles.accordionBody}>
+            <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>
+              Procedimiento Quirúrgico:
+            </Text>
+            <View
+              style={[
+                styles.fieldInputBox,
+                {
+                  backgroundColor: theme.background,
+                  borderColor: theme.border,
+                },
+              ]}
+            >
+              <TextInput
+                value={procedureName}
+                onChangeText={setProcedureName}
+                style={[styles.fieldInputText, { color: theme.textPrimary }]}
+                placeholder="Correcion Neuronal"
+                placeholderTextColor={theme.textSecondary}
+              />
+            </View>
+
+            <View
+              style={[
+                styles.fieldInputBox,
+                {
+                  backgroundColor: theme.background,
+                  borderColor: theme.border,
+                  marginBottom: 0,
+                },
+              ]}
+            >
+              <Text style={[styles.fieldInputText, { color: theme.textPrimary }]}>
+                Fecha: {surgeryDate} • Días Reposo: {totalRestDays}
+              </Text>
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Sección 2: 2. Acciones Prohibidas (nodo 1:662) */}
+      <View
+        style={[
+          styles.accordionCard,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.accordionHeaderRow}
+          activeOpacity={0.8}
+          onPress={() => handleToggleSection(2)}
+        >
+          <View style={styles.accordionLeftRow}>
+            <ProhibitedActionIcon size={34} />
+            <View style={styles.accordionTitleCol}>
+              <Text style={[styles.accordionTitle, { color: theme.textPrimary }]}>
+                2. Acciones Prohibidas
+              </Text>
+              <Text style={[styles.accordionSubtitleMuted, { color: theme.textSecondary }]}>
+                {prohibitedList.length} indicación(es) registrada(s)
+              </Text>
+            </View>
+          </View>
+
+          <Text style={[styles.chevronText, { color: theme.textSecondary }]}>
+            {expandedSection === 2 ? '^' : 'v'}
+          </Text>
+        </TouchableOpacity>
+
+        {expandedSection === 2 && (
+          <View style={styles.accordionBody}>
+            {prohibitedList.map((item, idx) => (
+              <View
+                key={`proh-${idx}`}
+                style={[
+                  styles.listItemRow,
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              >
+                <Text style={[styles.listItemText, { color: theme.textPrimary }]}>
+                  • {item}
+                </Text>
+              </View>
+            ))}
+
+            <View style={styles.addRow}>
+              <TextInput
+                value={newProhibitedText}
+                onChangeText={setNewProhibitedText}
+                placeholder="Nueva restricción postoperatoria..."
+                placeholderTextColor={theme.textSecondary}
+                style={[
+                  styles.addInput,
+                  {
+                    color: theme.textPrimary,
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              />
+              <TouchableOpacity
+                style={[styles.addSmallBtn, { backgroundColor: theme.primary }]}
+                onPress={handleAddProhibitedAction}
+              >
+                <Text style={styles.addSmallBtnText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Sección 3: 3. Cuidados & Curaciones (nodo 1:670) */}
+      <View
+        style={[
+          styles.accordionCard,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.accordionHeaderRow}
+          activeOpacity={0.8}
+          onPress={() => handleToggleSection(3)}
+        >
+          <View style={styles.accordionLeftRow}>
+            <AllowedCareIcon size={34} />
+            <View style={styles.accordionTitleCol}>
+              <Text style={[styles.accordionTitle, { color: theme.textPrimary }]}>
+                3. Cuidados & Curaciones
+              </Text>
+              <Text style={[styles.accordionSubtitleMuted, { color: theme.textSecondary }]}>
+                {allowedCaresList.length} indicación(es) registrada(s)
+              </Text>
+            </View>
+          </View>
+
+          <Text style={[styles.chevronText, { color: theme.textSecondary }]}>
+            {expandedSection === 3 ? '^' : 'v'}
+          </Text>
+        </TouchableOpacity>
+
+        {expandedSection === 3 && (
+          <View style={styles.accordionBody}>
+            {allowedCaresList.map((item, idx) => (
+              <View
+                key={`care-${idx}`}
+                style={[
+                  styles.listItemRow,
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              >
+                <Text style={[styles.listItemText, { color: theme.textPrimary }]}>
+                  • {item}
+                </Text>
+              </View>
+            ))}
+
+            <View style={styles.addRow}>
+              <TextInput
+                value={newCareText}
+                onChangeText={setNewCareText}
+                placeholder="Nuevo cuidado o curación..."
+                placeholderTextColor={theme.textSecondary}
+                style={[
+                  styles.addInput,
+                  {
+                    color: theme.textPrimary,
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              />
+              <TouchableOpacity
+                style={[styles.addSmallBtn, { backgroundColor: theme.primary }]}
+                onPress={handleAddAllowedCare}
+              >
+                <Text style={styles.addSmallBtnText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Sección 4: 4. Alergias & Urgencias (nodo 1:678) */}
+      <View
+        style={[
+          styles.accordionCard,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.accordionHeaderRow}
+          activeOpacity={0.8}
+          onPress={() => handleToggleSection(4)}
+        >
+          <View style={styles.accordionLeftRow}>
+            <AlertTriangleIcon size={34} />
+            <View style={styles.accordionTitleCol}>
+              <Text style={[styles.accordionTitle, { color: theme.textPrimary }]}>
+                4. Alergias & Urgencias
+              </Text>
+              <Text style={[styles.accordionSubtitleMuted, { color: theme.textSecondary }]}>
+                Configurar signos de alerta
+              </Text>
+            </View>
+          </View>
+
+          <Text style={[styles.chevronText, { color: theme.textSecondary }]}>
+            {expandedSection === 4 ? '^' : 'v'}
+          </Text>
+        </TouchableOpacity>
+
+        {expandedSection === 4 && (
+          <View style={styles.accordionBody}>
+            {allergiesList.map((item, idx) => (
+              <View
+                key={`allergy-${idx}`}
+                style={[
+                  styles.listItemRow,
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              >
+                <Text style={[styles.listItemText, { color: theme.textPrimary }]}>
+                  • {item}
+                </Text>
+              </View>
+            ))}
+
+            <View style={styles.addRow}>
+              <TextInput
+                value={newAllergyText}
+                onChangeText={setNewAllergyText}
+                placeholder="Signo de alarma o alergia..."
+                placeholderTextColor={theme.textSecondary}
+                style={[
+                  styles.addInput,
+                  {
+                    color: theme.textPrimary,
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              />
+              <TouchableOpacity
+                style={[styles.addSmallBtn, { backgroundColor: theme.primary }]}
+                onPress={handleAddAllergyAlert}
+              >
+                <Text style={styles.addSmallBtnText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Botón Guardar Ficha Postoperatoria (nodo 1:685) */}
+      <TouchableOpacity
+        style={[styles.saveFichaButton, { backgroundColor: theme.primary }]}
+        activeOpacity={0.85}
+        onPress={handleSavePostOpFicha}
+      >
+        <Text style={styles.saveFichaButtonText}>
+          Guardar Ficha Postoperatoria
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 28,
+  },
+  screenTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  patientSelectorCard: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  selectorLeftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  selectorTextCol: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  selectorLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  selectorPatientName: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  changePatientBtn: {
+    height: 30,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  changePatientBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  accordionCard: {
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+  },
+  accordionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  accordionLeftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  accordionTitleCol: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  accordionTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  accordionSubtitle: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  accordionSubtitleMuted: {
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  chevronText: {
+    fontSize: 12,
+    fontWeight: '700',
+    paddingHorizontal: 6,
+  },
+  accordionBody: {
+    marginTop: 12,
+  },
+  fieldLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  fieldInputBox: {
+    height: 34,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  fieldInputText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  listItemRow: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  listItemText: {
+    fontSize: 11,
+    fontWeight: '500',
+    lineHeight: 16,
+  },
+  addRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 2,
+  },
+  addInput: {
+    flex: 1,
+    height: 34,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    fontSize: 11,
+  },
+  addSmallBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addSmallBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  saveFichaButton: {
+    height: 46,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  saveFichaButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+});
