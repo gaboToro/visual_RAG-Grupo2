@@ -1,25 +1,7 @@
-/**
- * @file PostOpRecord.js
- * @description Entidad Raíz de Agregado (Aggregate Root - DDD) que representa la Ficha Postoperatoria
- * y las Órdenes Médicas subidas por el Médico Cirujano para un paciente específico.
- */
-
 const { SurgerySchedule } = require('../value-objects/SurgerySchedule');
 
 class PostOpRecord {
-  /**
-   * Crea una instancia de la Ficha Postoperatoria validando sus reglas de dominio.
-   * @param {Object} params - Datos de la ficha postoperatoria.
-   * @param {string} params.id - Identificador único de la ficha.
-   * @param {string} params.patientId - ID del paciente titular de la ficha.
-   * @param {string} params.patientName - Nombre del paciente titular.
-   * @param {string} params.doctorId - ID del médico cirujano que prescribe.
-   * @param {SurgerySchedule|Object} params.schedule - Cronograma quirúrgico.
-   * @param {Array<string>} [params.prohibitedActions] - Lista de acciones prohibidas (Sección 2).
-   * @param {Array<string>} [params.allowedCares] - Lista de cuidados y curaciones permitidas (Sección 3).
-   * @param {Array<string>} [params.allergiesAndAlerts] - Signos de alerta y alergias (Sección 4).
-   * @param {Array<string>} [params.prescribedMedications] - Insumos/medicamentos del tratamiento subido por el doctor.
-   */
+
   constructor({
     id,
     patientId,
@@ -50,10 +32,6 @@ class PostOpRecord {
     this.updatedAt = new Date().toISOString();
   }
 
-  /**
-   * Actualiza de forma integral la Ficha Postoperatoria desde el Portal Médico (Pantalla 09 de Figma).
-   * @param {Object} updates - Datos enviados por el médico cirujano.
-   */
   updateRecord({
     procedureName,
     surgeryDate,
@@ -90,10 +68,6 @@ class PostOpRecord {
     this.updatedAt = new Date().toISOString();
   }
 
-  /**
-   * Convierte la entidad de dominio a un DTO listo para ser consumido por la App Móvil y otros microservicios.
-   * @returns {Object} Representación serializable de la Ficha Postoperatoria.
-   */
   toDTO() {
     return {
       id: this.id,
