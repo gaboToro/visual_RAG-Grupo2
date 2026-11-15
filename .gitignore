@@ -1,0 +1,22 @@
+# Dependencias de Node.js
+node_modules/
+**/node_modules/
+
+# Caché y artefactos de Expo / React Native
+.expo/
+**/.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Archivos de sistema y logs
+.DS_Store
+Thumbs.db
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Variables de entorno locales
+.env
+.env.local
+.env.*.local
