@@ -1,9 +1,3 @@
-/**
- * @file index.js
- * @description Punto de entrada del Microservicio 3: Visual RAG Service (Puerto 4003).
- * Evalúa las fotografías de la herida postoperatoria con el Dataset de Machine Learning (RAG).
- */
-
 const http = require('http');
 const { PostOpWoundDataset } = require('./infrastructure/dataset/PostOpWoundDataset');
 const {
@@ -13,11 +7,6 @@ const { WoundRagEvaluatorService } = require('./domain/services/WoundRagEvaluato
 const { VisualRagUseCases } = require('./application/use-cases/VisualRagUseCases');
 const { VisualRagController } = require('./infrastructure/http/VisualRagController');
 
-/**
- * Parsea el cuerpo JSON de una petición HTTP.
- * @param {import('http').IncomingMessage} req - Petición HTTP.
- * @returns {Promise<Object>} Cuerpo parseado.
- */
 function parseRequestBody(req) {
   return new Promise((resolve) => {
     let raw = '';
@@ -35,11 +24,6 @@ function parseRequestBody(req) {
   });
 }
 
-/**
- * Inicia el servidor HTTP para el microservicio Visual RAG.
- * @param {number} [port=4003] - Puerto de escucha.
- * @returns {import('http').Server} Instancia del servidor HTTP.
- */
 function startVisualRagService(port = process.env.RAG_PORT || 4003) {
   const dataset = new PostOpWoundDataset();
   const repository = new InMemoryWoundReportRepository();
