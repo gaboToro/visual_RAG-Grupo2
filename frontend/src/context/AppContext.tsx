@@ -1,10 +1,3 @@
-/**
- * @file AppContext.tsx
- * @description Proveedor de estado global de React para la aplicación Visual RAG.
- * Gestiona la sesión activa (Paciente o Médico Cirujano), las fichas postoperatorias,
- * la evaluación de fotos con el motor Visual RAG, las recomendaciones de farmacia y el tema visual.
- */
-
 import React, { createContext, useContext, useState } from 'react';
 import {
   UserProfile,
@@ -22,9 +15,6 @@ import {
   savePostOpRecordViaGateway,
 } from '../services/apiClient';
 
-/**
- * Datos iniciales exactos al prototipo de Figma para garantizar fidelidad visual inmediata.
- */
 const INITIAL_PATIENTS: UserProfile[] = [
   {
     id: 'pat-1',
@@ -267,10 +257,6 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
-/**
- * Componente proveedor del contexto global de Visual RAG.
- * @param {{ children: React.ReactNode }} props - Componentes hijos de la aplicación.
- */
 export function AppProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [activePatientTab, setActivePatientTab] = useState<PatientTab>('EVAL');
@@ -290,13 +276,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   const theme = getThemePalette(isDarkMode);
 
-  /**
-   * Inicia sesión como Paciente o Médico Cirujano verificando contra el API Gateway o las cuentas demo.
-   * @param {string} email - Correo electrónico.
-   * @param {string} password - Contraseña.
-   * @param {UserRole} role - Rol seleccionado.
-   * @returns {Promise<boolean>} True si el acceso fue exitoso.
-   */
   async function login(email: string, password: string, role: UserRole): Promise<boolean> {
     const gatewayUser = await loginViaGateway(email, password, role);
     if (gatewayUser) {
@@ -320,25 +299,15 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     }
   }
 
-  /**
-   * Cierra la sesión actual y regresa a la pantalla 01 (Login Screen).
-   */
   function logout(): void {
     setCurrentUser(null);
     setSelectedReportForModal(null);
   }
 
-  /**
-   * Alterna entre el Modo Claro Activado y el Modo Oscuro Activado.
-   */
   function toggleDarkMode(): void {
     setIsDarkMode((prev) => !prev);
   }
 
-  /**
-   * Añade una fotografía de la incisión a la bandeja de evaluación (máximo 4 fotos según Figma).
-   * @param {string} uri - URI o etiqueta de la imagen capturada.
-   */
   function addCapturedPhoto(uri: string): void {
     setCapturedPhotos((prev) => {
       if (prev.length >= 4) return prev;
@@ -346,18 +315,10 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     });
   }
 
-  /**
-   * Limpia las fotografías cargadas en la bandeja de captura.
-   */
   function clearCapturedPhotos(): void {
     setCapturedPhotos([]);
   }
 
-  /**
-   * Ejecuta la evaluación de las fotos de la herida con el motor Visual RAG (Dataset ML)
-   * y actualiza tanto los reportes guardados como las recomendaciones de farmacia.
-   * @returns {Promise<WoundReportDTO>} Reporte clínico oficial generado.
-   */
   async function evaluateCapturedWoundPhotos(): Promise<WoundReportDTO> {
     setIsEvaluatingRag(true);
     try {
@@ -389,7 +350,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         return enrichedReport;
       }
 
-      // Evaluación local de respaldo utilizando las reglas del dominio Visual RAG
       const folio = `REP-${Math.floor(100000 + Math.random() * 900000)}`;
       const localReport: WoundReportDTO = {
         folio,
@@ -420,11 +380,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     }
   }
 
-  /**
-   * Actualiza los Datos Clínicos del paciente autenticado (Pantalla 07 de Figma).
-   * @param {string} fullName - Nombre completo actualizado.
-   * @param {string} emergencyContact - Contacto de emergencia actualizado.
-   */
   function updatePatientClinicalInfo(fullName: string, emergencyContact: string): void {
     if (!currentUser) return;
     const updated: UserProfile = {
@@ -439,11 +394,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     setPatients((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   }
 
-  /**
-   * Actualiza los Datos Profesionales del médico cirujano (Pantalla 10 de Figma).
-   * @param {string} specialty - Especialidad médica.
-   * @param {string} hospital - Hospital o clínica.
-   */
   function updateDoctorProfessionalInfo(specialty: string, hospital: string): void {
     const updated: UserProfile = {
       ...doctorProfile,
@@ -459,13 +409,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     }
   }
 
-  /**
-   * Asigna un nuevo paciente a la lista del médico cirujano (botón "+ Asignar" en Pantalla 08).
-   * @param {string} fullName - Nombre completo del nuevo paciente.
-   * @param {string} email - Correo electrónico.
-   * @param {string} cedula - Número de cédula.
-   * @param {string} bloodType - Grupo sanguíneo.
-   */
   function assignNewPatientToDoctor(
     fullName: string,
     email: string,
@@ -515,10 +458,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     setPostOpRecords((prev) => ({ ...prev, [newId]: newRecord }));
   }
 
-  /**
-   * Desvincula un paciente de la lista del médico cirujano (botón rojo "X" en Pantalla 08).
-   * @param {string} patientId - ID del paciente a desvincular.
-   */
   function removePatientFromDoctor(patientId: string): void {
     setPatients((prev) => {
       const filtered = prev.filter((p) => p.id !== patientId);
@@ -529,12 +468,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     });
   }
 
-  /**
-   * Guarda los cambios realizados por el médico en la Ficha Postoperatoria (Pantalla 09)
-   * y sincroniza el tratamiento con las recomendaciones de Farmacia.
-   * @param {string} patientId - ID del paciente seleccionado.
-   * @param {Object} updates - Datos actualizados de la ficha postoperatoria.
-   */
   async function saveDoctorPostOpRecord(
     patientId: string,
     updates: {
@@ -623,10 +556,6 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
   );
 }
 
-/**
- * Hook personalizado para acceder al estado y casos de uso de Visual RAG desde cualquier pantalla.
- * @returns {AppContextValue} Contexto de la aplicación.
- */
 export function useApp(): AppContextValue {
   const context = useContext(AppContext);
   if (!context) {
