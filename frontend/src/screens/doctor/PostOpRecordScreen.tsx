@@ -1,15 +1,3 @@
-/**
- * @file PostOpRecordScreen.tsx
- * @description Implementación de la Pantalla 09 de Figma ("09. Doctor - Ficha Postoperatoria" - nodo 1:615).
- * Permite al Médico Cirujano seleccionar al paciente ("PACIENTE SELECCIONADO: Nelson Steven Casa"),
- * editar las 4 secciones de la Ficha Postoperatoria:
- *   1. Cirugía & Cronograma ("Correcion Neuronal • 10 días")
- *   2. Acciones Prohibidas ("2 indicación(es) registrada(s)")
- *   3. Cuidados & Curaciones ("1 indicación(es) registrada(s)")
- *   4. Alergias & Urgencias ("Configurar signos de alerta")
- * y guardar los cambios con el botón "Guardar Ficha Postoperatoria".
- */
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -29,9 +17,6 @@ import {
   AlertTriangleIcon,
 } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Edición de la Ficha Postoperatoria por el Médico Cirujano (Pantalla 09 de Figma).
- */
 export function PostOpRecordScreen(): React.JSX.Element {
   const {
     patients,
@@ -47,10 +32,8 @@ export function PostOpRecordScreen(): React.JSX.Element {
   const activeRecord =
     postOpRecords[currentPatient?.id || 'pat-1'] || postOpRecords['pat-1'];
 
-  // Estado de qué secciones del acordeón están expandidas (por defecto la sección 1 como en Figma)
   const [expandedSection, setExpandedSection] = useState<number>(1);
 
-  // Campos editables de la Ficha Postoperatoria
   const [procedureName, setProcedureName] = useState<string>(
     activeRecord.schedule.procedureName
   );
@@ -82,9 +65,6 @@ export function PostOpRecordScreen(): React.JSX.Element {
     setAllergiesList(activeRecord.allergiesAndAlerts);
   }, [selectedDoctorPatientId, activeRecord]);
 
-  /**
-   * Alterna entre los pacientes asignados al médico cuando presiona el botón "Cambiar v".
-   */
   function handleCycleSelectedPatient(): void {
     if (patients.length <= 1) return;
     const currentIndex = patients.findIndex((p) => p.id === currentPatient.id);
@@ -92,44 +72,28 @@ export function PostOpRecordScreen(): React.JSX.Element {
     setSelectedDoctorPatientId(patients[nextIndex].id);
   }
 
-  /**
-   * Abre o cierra una de las 4 secciones del acordeón de la Ficha Postoperatoria.
-   * @param {number} sectionNumber - Número de sección (1 a 4).
-   */
   function handleToggleSection(sectionNumber: number): void {
     setExpandedSection((prev) => (prev === sectionNumber ? 0 : sectionNumber));
   }
 
-  /**
-   * Añade una nueva acción prohibida a la sección 2.
-   */
   function handleAddProhibitedAction(): void {
     if (!newProhibitedText.trim()) return;
     setProhibitedList((prev) => [...prev, newProhibitedText.trim()]);
     setNewProhibitedText('');
   }
 
-  /**
-   * Añade un nuevo cuidado permitido a la sección 3.
-   */
   function handleAddAllowedCare(): void {
     if (!newCareText.trim()) return;
     setAllowedCaresList((prev) => [...prev, newCareText.trim()]);
     setNewCareText('');
   }
 
-  /**
-   * Añade un signo de alerta o alergia a la sección 4.
-   */
   function handleAddAllergyAlert(): void {
     if (!newAllergyText.trim()) return;
     setAllergiesList((prev) => [...prev, newAllergyText.trim()]);
     setNewAllergyText('');
   }
 
-  /**
-   * Guarda la Ficha Postoperatoria en el microservicio de Órdenes Clínicas y sincroniza el Portal Paciente.
-   */
   async function handleSavePostOpFicha(): Promise<void> {
     await saveDoctorPostOpRecord(currentPatient.id, {
       procedureName: procedureName.trim() || 'Correcion Neuronal',
@@ -152,12 +116,12 @@ export function PostOpRecordScreen(): React.JSX.Element {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Título de Sección (nodo 1:636) */}
+      { }
       <Text style={[styles.screenTitle, { color: theme.textPrimary }]}>
         Ficha Postoperatoria
       </Text>
 
-      {/* Selector de Paciente Seleccionado (nodo 1:637) */}
+      { }
       <View
         style={[
           styles.patientSelectorCard,
@@ -190,7 +154,7 @@ export function PostOpRecordScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Sección 1: 1. Cirugía & Cronograma (nodo 1:648) */}
+      { }
       <View
         style={[
           styles.accordionCard,
@@ -263,7 +227,7 @@ export function PostOpRecordScreen(): React.JSX.Element {
         )}
       </View>
 
-      {/* Sección 2: 2. Acciones Prohibidas (nodo 1:662) */}
+      { }
       <View
         style={[
           styles.accordionCard,
@@ -340,7 +304,7 @@ export function PostOpRecordScreen(): React.JSX.Element {
         )}
       </View>
 
-      {/* Sección 3: 3. Cuidados & Curaciones (nodo 1:670) */}
+      { }
       <View
         style={[
           styles.accordionCard,
@@ -417,7 +381,7 @@ export function PostOpRecordScreen(): React.JSX.Element {
         )}
       </View>
 
-      {/* Sección 4: 4. Alergias & Urgencias (nodo 1:678) */}
+      { }
       <View
         style={[
           styles.accordionCard,
@@ -494,7 +458,7 @@ export function PostOpRecordScreen(): React.JSX.Element {
         )}
       </View>
 
-      {/* Botón Guardar Ficha Postoperatoria (nodo 1:685) */}
+      { }
       <TouchableOpacity
         style={[styles.saveFichaButton, { backgroundColor: theme.primary }]}
         activeOpacity={0.85}
