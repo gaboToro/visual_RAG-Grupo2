@@ -1,11 +1,3 @@
-/**
- * @file PatientProfileScreen.tsx
- * @description Implementación de la Pantalla 07 de Figma ("07. Paciente - Perfil Clínico" - nodo 1:450).
- * Muestra "Perfil y Configuración", tarjeta con avatar y datos del paciente ("Nelson Steven Casa",
- * "nelsoncasa@gmail.com", "Grupo: O+", "CI: 1751361054"), tarjeta de "Modo de Visualización",
- * formulario de "Datos Clínicos" ("Nombre Completo:", "Contacto de Emergencia:") y botón "Cerrar Sesión".
- */
-
 import React, { useState } from 'react';
 import {
   View,
@@ -22,9 +14,6 @@ import {
   ThemeModeIcon,
 } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Perfil Clínico y Configuración del Paciente (Pantalla 07 de Figma).
- */
 export function PatientProfileScreen(): React.JSX.Element {
   const {
     currentUser,
@@ -42,9 +31,6 @@ export function PatientProfileScreen(): React.JSX.Element {
     currentUser?.clinicalInfo?.emergencyContact || 'Carmen Casa (Madre) - 0987654321'
   );
 
-  /**
-   * Guarda los cambios realizados en los Datos Clínicos del paciente.
-   */
   function handleSaveClinicalData(): void {
     updatePatientClinicalInfo(fullName, emergencyContact);
     Alert.alert(
@@ -59,12 +45,12 @@ export function PatientProfileScreen(): React.JSX.Element {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Título de Sección (nodo 1:471) */}
+      { }
       <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
         Perfil y Configuración
       </Text>
 
-      {/* Tarjeta de Resumen del Paciente (nodo 1:472) */}
+      { }
       <View
         style={[
           styles.profileSummaryCard,
@@ -100,7 +86,7 @@ export function PatientProfileScreen(): React.JSX.Element {
         </View>
       </View>
 
-      {/* Tarjeta de Modo de Visualización (nodo 1:483) */}
+      { }
       <View
         style={[
           styles.themeCard,
@@ -133,7 +119,7 @@ export function PatientProfileScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Tarjeta Formulario de Datos Clínicos (nodo 1:492) */}
+      { }
       <View
         style={[
           styles.formCard,
@@ -198,7 +184,7 @@ export function PatientProfileScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Botón Cerrar Sesión (nodo 1:503) */}
+      { }
       <TouchableOpacity
         style={[
           styles.logoutBtn,
