@@ -1,9 +1,3 @@
-/**
- * @file PatientBottomBar.tsx
- * @description Barra de navegación inferior de 5 pestañas para el Portal Paciente
- * (Evaluación, Reportes, Farmacia, Órdenes, Perfil) basada en el nodo Figma 1:106.
- */
-
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useApp } from '../../context/AppContext';
@@ -28,31 +22,28 @@ const PATIENT_TABS: TabConfig[] = [
   { key: 'PROFILE', label: 'Perfil' },
 ];
 
-/**
- * Renderiza el icono correspondiente a cada una de las 5 pestañas del Portal Paciente.
- * @param {PatientTab} tabKey - Identificador de la pestaña.
- * @param {string} color - Color activo (#0D9488) o inactivo (#64748B).
- */
 function renderPatientTabIcon(tabKey: PatientTab, color: string): React.JSX.Element {
   switch (tabKey) {
     case 'EVAL':
       return <SmallCameraIcon color={color} />;
     case 'REPORTS':
+    case 'REP':
       return <TabReportsIcon color={color} />;
     case 'PHARMACY':
+    case 'PHARM':
       return (
         <Text style={[styles.pharmacyPlusIcon, { color }]}>+</Text>
       );
     case 'ORDERS':
+    case 'ORD':
       return <TabOrdersIcon color={color} />;
     case 'PROFILE':
+    case 'PROF':
+    default:
       return <TabProfileIcon color={color} />;
   }
 }
 
-/**
- * Componente de barra de navegación inferior para el Paciente con Home Indicator nativo.
- */
 export function PatientBottomBar(): React.JSX.Element {
   const { activePatientTab, setActivePatientTab, theme } = useApp();
 
@@ -97,7 +88,7 @@ export function PatientBottomBar(): React.JSX.Element {
         })}
       </View>
 
-      {/* Barra indicadora inferior (Home Indicator 134x5 de Figma) */}
+      { }
       <View style={styles.homeIndicatorWrapper}>
         <View style={styles.homeIndicatorBar} />
       </View>
