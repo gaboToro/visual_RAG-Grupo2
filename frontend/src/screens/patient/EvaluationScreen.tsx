@@ -1,11 +1,3 @@
-/**
- * @file EvaluationScreen.tsx
- * @description Implementación de la Pantalla 02 de Figma ("02. Paciente - Evaluación" - nodo 1:49).
- * Muestra la tarjeta de progreso quirúrgico ("Correcion Neuronal", "Reposo: Día 79 de 10", "100%")
- * y la tarjeta de captura ("Tomar Fotografía", "Puedes ingresar de 1 a 4 fotos de tu incisión",
- * botones "Abrir Cámara" y "Galería") conectada al motor Visual RAG.
- */
-
 import React from 'react';
 import {
   View,
@@ -26,9 +18,6 @@ import {
   WoundIncisionGraphic,
 } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Evaluación Postoperatoria del Paciente (Pantalla 02 de Figma).
- */
 export function EvaluationScreen(): React.JSX.Element {
   const {
     currentUser,
@@ -46,10 +35,6 @@ export function EvaluationScreen(): React.JSX.Element {
   const record = postOpRecords[patientId] || postOpRecords['pat-1'];
   const schedule = record.schedule;
 
-  /**
-   * Abre la cámara del dispositivo (o añade una captura clínica simulada si se ejecuta en emulador sin cámara)
-   * permitiendo registrar de 1 a 4 fotografías de la herida postoperatoria.
-   */
   async function handleOpenCamera(): Promise<void> {
     if (capturedPhotos.length >= 4) {
       Alert.alert(
@@ -72,16 +57,12 @@ export function EvaluationScreen(): React.JSX.Element {
         }
       }
     } catch {
-      // Fallback en entorno web o emulador sin hardware de cámara
+
     }
 
-    // Agrega muestra de incisión postoperatoria si no se seleccionó desde hardware físico
     addCapturedPhoto(`Foto #${capturedPhotos.length + 1}`);
   }
 
-  /**
-   * Abre la galería fotográfica del dispositivo para seleccionar de 1 a 4 fotos de la herida.
-   */
   async function handleOpenGallery(): Promise<void> {
     if (capturedPhotos.length >= 4) {
       Alert.alert(
@@ -104,16 +85,12 @@ export function EvaluationScreen(): React.JSX.Element {
         }
       }
     } catch {
-      // Fallback en caso de permisos restringidos en simulador
+
     }
 
     addCapturedPhoto(`Foto #${capturedPhotos.length + 1}`);
   }
 
-  /**
-   * Envía las fotografías capturadas al microservicio Visual RAG (Dataset ML + Tratamiento del Doctor)
-   * y abre el modal de Reporte Clínico Oficial (Pantalla 04).
-   */
   async function handleRunVisualRagEvaluation(): Promise<void> {
     await evaluateCapturedWoundPhotos();
     setActivePatientTab('REPORTS');
@@ -125,7 +102,7 @@ export function EvaluationScreen(): React.JSX.Element {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Tarjeta Superior de Progreso Quirúrgico (SurgeryCard - nodo 1:72) */}
+      { }
       <View
         style={[
           styles.surgeryCard,
@@ -155,7 +132,7 @@ export function EvaluationScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {/* Barra de Progreso de Recuperación (nodos 1:81 y 1:82) */}
+        { }
         <View style={[styles.progressTrack, { backgroundColor: theme.surfaceMuted }]}>
           <View
             style={[
@@ -169,7 +146,7 @@ export function EvaluationScreen(): React.JSX.Element {
         </View>
       </View>
 
-      {/* Tarjeta Principal de Captura Fotográfica con Borde Punteado (CaptureCard - nodo 1:83) */}
+      { }
       <View
         style={[
           styles.captureCard,
@@ -190,7 +167,7 @@ export function EvaluationScreen(): React.JSX.Element {
           Puedes ingresar de 1 a 4 fotos de tu incisión
         </Text>
 
-        {/* Vista previa cuando el paciente ha agregado de 1 a 4 fotos */}
+        { }
         {capturedPhotos.length > 0 && (
           <View style={styles.previewSection}>
             <View style={styles.previewGrid}>
@@ -232,7 +209,7 @@ export function EvaluationScreen(): React.JSX.Element {
           </View>
         )}
 
-        {/* Botones Abrir Cámara y Galería (nodo 1:92) */}
+        { }
         <View style={styles.buttonsRow}>
           <TouchableOpacity
             style={[styles.cameraButton, { backgroundColor: theme.primary }]}
