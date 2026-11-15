@@ -1,21 +1,7 @@
-/**
- * @file BestPriceRecommenderService.js
- * @description Servicio de Dominio (Domain Service - DDD) que cruza el diagnóstico RAG de la herida
- * y el tratamiento médico subido por el doctor para recomendar medicamentos a mejores precios.
- */
-
 const { PriceComparisonResult } = require('../value-objects/PriceComparisonResult');
 
 class BestPriceRecommenderService {
-  /**
-   * Filtra y ordena los medicamentos del catálogo acorde al tratamiento prescrito por el doctor
-   * y al estado de cicatrización detectado por el modelo Visual RAG.
-   * @param {Array<import('../entities/MedicationProduct').MedicationProduct>} catalog - Catálogo completo.
-   * @param {Object} context - Contexto clínico del paciente.
-   * @param {Array<string>} [context.prescribedMedications] - Medicamentos en la Ficha Postoperatoria.
-   * @param {string} [context.woundClassification] - Diagnóstico emitido por el motor Visual RAG.
-   * @returns {Object} Recomendación completa con comparativa de precios y listado de insumos.
-   */
+
   recommendBestPriceMedications(
     catalog,
     {
@@ -24,7 +10,7 @@ class BestPriceRecommenderService {
       postOpDay = 79,
     } = {}
   ) {
-    // Filtramos los productos que coinciden con la receta del doctor o con la clasificación RAG
+
     let matchedProducts = catalog.filter((product) => {
       const matchesPrescription = prescribedMedications.some(
         (rx) =>
@@ -41,7 +27,6 @@ class BestPriceRecommenderService {
       matchedProducts = catalog;
     }
 
-    // Construimos la comparativa destacada sobre el primer insumo esencial
     const featuredProduct = matchedProducts[0];
     const { lowest, second } = featuredProduct.getTopTwoOffersByPrice();
     const priceComparison = new PriceComparisonResult({
