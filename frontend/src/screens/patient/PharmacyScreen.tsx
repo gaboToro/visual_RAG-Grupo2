@@ -1,11 +1,3 @@
-/**
- * @file PharmacyScreen.tsx
- * @description Implementación de la Pantalla 05 de Figma ("05. Paciente - Farmacia & Insumos" - nodo 1:275).
- * Muestra el "Consejo de Recuperación IA", la tarjeta "Comparativa de Precios" ("Ahorras $0.95 en este insumo",
- * "Cruz Azul $3.20 Precio Más Bajo" vs "Fybeca $4.15 Entrega en 30 min") y las tarjetas de medicamentos
- * recomendados acorde al tratamiento médico subido por el doctor.
- */
-
 import React from 'react';
 import {
   View,
@@ -19,20 +11,10 @@ import {
 import { useApp } from '../../context/AppContext';
 import { SparklesAiIcon } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Farmacia e Insumos con Comparativa de Precios (Pantalla 05 de Figma).
- */
 export function PharmacyScreen(): React.JSX.Element {
   const { pharmacyData, theme } = useApp();
   const comparison = pharmacyData.priceComparison;
 
-  /**
-   * Abre el portal de pedido en línea de la farmacia seleccionada o muestra confirmación del pedido.
-   * @param {string} medicationName - Nombre del medicamento o insumo quirúrgico.
-   * @param {string} pharmacyName - Farmacia proveedora (ej. Cruz Azul o Fybeca).
-   * @param {string} formattedPrice - Precio formateado.
-   * @param {string} url - URL de la farmacia.
-   */
   async function handleOrderOnline(
     medicationName: string,
     pharmacyName: string,
@@ -53,7 +35,7 @@ export function PharmacyScreen(): React.JSX.Element {
                 await Linking.openURL(url);
               }
             } catch {
-              // Ignorar si no hay navegador externo configurado
+
             }
           },
         },
@@ -67,7 +49,7 @@ export function PharmacyScreen(): React.JSX.Element {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Título y Subtítulo (nodos 1:296 y 1:297) */}
+      { }
       <Text style={[styles.screenTitle, { color: theme.textPrimary }]}>
         Farmacia & Insumos
       </Text>
@@ -75,7 +57,7 @@ export function PharmacyScreen(): React.JSX.Element {
         {pharmacyData.headerSubtitle}
       </Text>
 
-      {/* Banner Consejo de Recuperación IA (nodo 1:298) */}
+      { }
       <View
         style={[
           styles.aiTipCard,
@@ -98,7 +80,7 @@ export function PharmacyScreen(): React.JSX.Element {
         </Text>
       </View>
 
-      {/* Tarjeta Comparativa de Precios (nodo 1:307) */}
+      { }
       <View
         style={[
           styles.comparisonCard,
@@ -116,7 +98,7 @@ export function PharmacyScreen(): React.JSX.Element {
         </Text>
 
         <View style={styles.offersRow}>
-          {/* Mejor Oferta: Cruz Azul $3.20 (nodo 1:310) */}
+          { }
           <View
             style={[
               styles.bestOfferBox,
@@ -137,7 +119,7 @@ export function PharmacyScreen(): React.JSX.Element {
             </Text>
           </View>
 
-          {/* Oferta Alternativa: Fybeca $4.15 (nodo 1:314) */}
+          { }
           <View
             style={[
               styles.altOfferBox,
@@ -160,7 +142,7 @@ export function PharmacyScreen(): React.JSX.Element {
         </View>
       </View>
 
-      {/* Lista de Medicamentos e Insumos Recomendados (nodos 1:318 y 1:327) */}
+      { }
       {pharmacyData.recommendedItems.map((item) => (
         <View
           key={item.id}
