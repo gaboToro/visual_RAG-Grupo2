@@ -1,17 +1,8 @@
-/**
- * @file index.ts
- * @description Definiciones de tipos e interfaces TypeScript que representan los modelos
- * de dominio en el cliente móvil (React Native Expo) sincronizados con los microservicios DDD.
- */
-
 export type UserRole = 'PATIENT' | 'DOCTOR';
 
-export type PatientTab = 'EVAL' | 'REP' | 'PHARM' | 'ORD' | 'PROF';
-export type DoctorTab = 'PATIENTS' | 'RESTRICTIONS' | 'PROFILE';
+export type PatientTab = 'EVAL' | 'REPORTS' | 'PHARMACY' | 'ORDERS' | 'PROFILE' | 'REP' | 'PHARM' | 'ORD' | 'PROF';
+export type DoctorTab = 'PATIENTS' | 'RECORD' | 'PROFILE' | 'RESTRICTIONS';
 
-/**
- * Información clínica del paciente o profesional del médico cirujano.
- */
 export interface ClinicalInfo {
   cedula?: string;
   bloodType?: string;
@@ -22,9 +13,6 @@ export interface ClinicalInfo {
   hospital?: string;
 }
 
-/**
- * Usuario autenticado (Paciente o Médico Cirujano).
- */
 export interface UserProfile {
   id: string;
   fullName: string;
@@ -34,9 +22,6 @@ export interface UserProfile {
   clinicalInfo: ClinicalInfo;
 }
 
-/**
- * Cronograma quirúrgico calculado por el microservicio de Órdenes Clínicas.
- */
 export interface SurgeryScheduleDTO {
   procedureName: string;
   surgeryDate: string;
@@ -46,9 +31,6 @@ export interface SurgeryScheduleDTO {
   completionPercentage: number;
 }
 
-/**
- * Ficha Postoperatoria y Órdenes de Recuperación prescritas por el doctor.
- */
 export interface PostOpRecordDTO {
   id: string;
   patientId: string;
@@ -62,9 +44,6 @@ export interface PostOpRecordDTO {
   updatedAt?: string;
 }
 
-/**
- * Reporte Clínico Oficial generado por el motor Visual RAG + Machine Learning.
- */
 export interface WoundReportDTO {
   folio: string;
   patientId: string;
@@ -84,9 +63,6 @@ export interface WoundReportDTO {
   verifiedSignature: string;
 }
 
-/**
- * Oferta de una cadena de farmacias para la tarjeta de comparativa de precios.
- */
 export interface PharmacyOfferSummary {
   pharmacyName: string;
   price: number;
@@ -96,9 +72,6 @@ export interface PharmacyOfferSummary {
   orderUrl: string;
 }
 
-/**
- * Resultado de comparativa de precios en un insumo quirúrgico.
- */
 export interface PriceComparisonDTO {
   medicationName: string;
   savingsAmount: number;
@@ -107,9 +80,6 @@ export interface PriceComparisonDTO {
   alternativeOffer: PharmacyOfferSummary;
 }
 
-/**
- * Medicamento o insumo individual recomendado para la recuperación postoperatoria.
- */
 export interface RecommendedMedicationItemDTO {
   id: string;
   name: string;
@@ -122,9 +92,6 @@ export interface RecommendedMedicationItemDTO {
   orderUrl: string;
 }
 
-/**
- * Respuesta integral del microservicio de Farmacia y Precios.
- */
 export interface PharmacyRecommendationDTO {
   postOpDay: number;
   woundClassification: string;
