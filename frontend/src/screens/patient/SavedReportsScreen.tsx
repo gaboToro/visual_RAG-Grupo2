@@ -1,10 +1,3 @@
-/**
- * @file SavedReportsScreen.tsx
- * @description Implementación de la Pantalla 03 de Figma ("03. Paciente - Reportes Guardados" - nodo 1:131).
- * Muestra el listado de "Reportes Clínicos Guardados" (ej. REP-475381 y REP-216547), su estado de evolución,
- * el bloque de "Plan Médico del Día" generado por IA y los botones "Descargar PDF" y "Ver Detalle".
- */
-
 import React from 'react';
 import {
   View,
@@ -22,24 +15,13 @@ import {
   DownloadPdfIcon,
 } from '../../components/icons/FigmaIcons';
 
-/**
- * Pantalla de Reportes Clínicos Guardados del Paciente (Pantalla 03 de Figma).
- */
 export function SavedReportsScreen(): React.JSX.Element {
   const { savedReports, setSelectedReportForModal, theme } = useApp();
 
-  /**
-   * Abre el modal emergente "Reporte Clínico Oficial" (Pantalla 04) con los datos del reporte seleccionado.
-   * @param {WoundReportDTO} report - Reporte clínico seleccionado.
-   */
   function handleOpenReportDetail(report: WoundReportDTO): void {
     setSelectedReportForModal(report);
   }
 
-  /**
-   * Descarga directamente el PDF del reporte clínico seleccionado desde la tarjeta.
-   * @param {WoundReportDTO} report - Reporte clínico a exportar en PDF.
-   */
   function handleDownloadReportPdf(report: WoundReportDTO): void {
     Alert.alert(
       'Descargar PDF',
@@ -48,9 +30,6 @@ export function SavedReportsScreen(): React.JSX.Element {
     );
   }
 
-  /**
-   * Refresca la lista de reportes clínicos sincronizados con el microservicio Visual RAG.
-   */
   function handleRefreshReports(): void {
     Alert.alert(
       'Sincronizado',
@@ -64,7 +43,7 @@ export function SavedReportsScreen(): React.JSX.Element {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Encabezado de Sección: "Reportes Clínicos Guardados" + Botón Refrescar (nodo 1:152) */}
+      { }
       <View style={styles.sectionHeaderRow}>
         <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
           Reportes Clínicos Guardados
@@ -78,7 +57,7 @@ export function SavedReportsScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      {/* Tarjetas de Reportes Clínicos (nodos 1:156 y 1:177) */}
+      { }
       {savedReports.map((report) => (
         <View
           key={report.folio}
@@ -90,7 +69,7 @@ export function SavedReportsScreen(): React.JSX.Element {
             },
           ]}
         >
-          {/* Fila superior: Folio pill + Badge Evolución Favorable */}
+          { }
           <View style={styles.cardTopRow}>
             <View style={[styles.folioPill, { backgroundColor: theme.surfaceMuted }]}>
               <Text style={[styles.folioPillText, { color: theme.textPrimary }]}>
@@ -105,7 +84,7 @@ export function SavedReportsScreen(): React.JSX.Element {
             </View>
           </View>
 
-          {/* Diagnóstico y Fecha */}
+          { }
           <Text style={[styles.diagnosisTitle, { color: theme.textPrimary }]}>
             {report.diagnosisTitle}
           </Text>
@@ -113,7 +92,7 @@ export function SavedReportsScreen(): React.JSX.Element {
             Día {report.postOpDay} • {report.formattedDate}
           </Text>
 
-          {/* Recuadro Plan Médico del Día (nodo 1:165) */}
+          { }
           <View
             style={[
               styles.planBox,
@@ -134,7 +113,7 @@ export function SavedReportsScreen(): React.JSX.Element {
             </Text>
           </View>
 
-          {/* Botones Descargar PDF y Ver Detalle (nodo 1:170) */}
+          { }
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={[styles.downloadPdfBtn, { backgroundColor: theme.primary }]}
