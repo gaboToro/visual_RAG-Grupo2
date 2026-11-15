@@ -1,25 +1,14 @@
-/**
- * @file InMemoryUserRepository.js
- * @description Adaptador de Infraestructura (Infrastructure Layer - DDD) que implementa IUserRepository
- * con los datos iniciales exactos del prototipo de Figma (Nelson Steven Casa, María Elena Quispe y Dr. Nelson Casa).
- */
-
 const { IUserRepository } = require('../../domain/repositories/IUserRepository');
 const { User } = require('../../domain/entities/User');
 
 class InMemoryUserRepository extends IUserRepository {
-  /**
-   * Inicializa el repositorio en memoria precargando las cuentas demo del prototipo en Figma.
-   */
+
   constructor() {
     super();
     this.users = new Map();
     this.seedInitialFigmaData();
   }
 
-  /**
-   * Carga las cuentas iniciales idénticas a las especificadas en las pantallas 01, 07, 08 y 10 de Figma.
-   */
   seedInitialFigmaData() {
     const demoPatient1 = new User({
       id: 'pat-1',
@@ -69,20 +58,10 @@ class InMemoryUserRepository extends IUserRepository {
     this.users.set(demoDoctor.id, demoDoctor);
   }
 
-  /**
-   * Busca un usuario por su ID único.
-   * @param {string} id - Identificador del usuario.
-   * @returns {Promise<User|null>}
-   */
   async findById(id) {
     return this.users.get(id) || null;
   }
 
-  /**
-   * Busca un usuario por correo electrónico sin importar mayúsculas/minúsculas.
-   * @param {string} email - Correo electrónico.
-   * @returns {Promise<User|null>}
-   */
   async findByEmail(email) {
     if (!email) return null;
     const normalized = email.toLowerCase().trim();
@@ -94,12 +73,6 @@ class InMemoryUserRepository extends IUserRepository {
     return null;
   }
 
-  /**
-   * Devuelve todos los usuarios con rol PATIENT que coincidan con el texto de búsqueda
-   * (por nombre completo, número de cédula o correo electrónico).
-   * @param {string} [searchQuery] - Texto de búsqueda opcional.
-   * @returns {Promise<Array<User>>}
-   */
   async findPatients(searchQuery = '') {
     const query = searchQuery.toLowerCase().trim();
     const results = [];
@@ -118,21 +91,11 @@ class InMemoryUserRepository extends IUserRepository {
     return results;
   }
 
-  /**
-   * Persiste o actualiza una entidad User en el mapa en memoria.
-   * @param {User} user - Entidad User a guardar.
-   * @returns {Promise<User>}
-   */
   async save(user) {
     this.users.set(user.id, user);
     return user;
   }
 
-  /**
-   * Elimina un paciente del repositorio por su ID.
-   * @param {string} patientId - ID del paciente.
-   * @returns {Promise<boolean>}
-   */
   async deletePatient(patientId) {
     return this.users.delete(patientId);
   }
