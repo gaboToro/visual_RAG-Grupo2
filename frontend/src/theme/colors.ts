@@ -1,9 +1,3 @@
-/**
- * @file colors.ts
- * @description Tokens de diseño (colores, bordes y superficies) extraídos exactamente
- * del prototipo de Figma (`VISUALRAGTRAIE--copia-`), con soporte para Modo Claro y Modo Oscuro.
- */
-
 export interface ThemePalette {
   isDark: boolean;
   background: string;
@@ -22,11 +16,18 @@ export interface ThemePalette {
   dangerRed: string;
   dangerRedSoft: string;
   white: string;
+
+  surface: string;
+  surfaceMuted: string;
+  primary: string;
+  primaryLight: string;
+  emerald: string;
+  emeraldLight: string;
+  danger: string;
+  dangerLight: string;
+  dangerBorder: string;
 }
 
-/**
- * Paleta oficial del Modo Claro extraída de los frames de Figma.
- */
 export const LIGHT_THEME: ThemePalette = {
   isDark: false,
   background: '#F8FAFC',
@@ -45,11 +46,18 @@ export const LIGHT_THEME: ThemePalette = {
   dangerRed: '#EF4444',
   dangerRedSoft: '#FEE2E2',
   white: '#FFFFFF',
+
+  surface: '#FFFFFF',
+  surfaceMuted: '#F1F5F9',
+  primary: '#0D9488',
+  primaryLight: '#CCFBF1',
+  emerald: '#059669',
+  emeraldLight: '#ECFDF5',
+  danger: '#EF4444',
+  dangerLight: '#FEE2E2',
+  dangerBorder: '#FECACA',
 };
 
-/**
- * Paleta del Modo Oscuro activable desde el botón "Cambiar" en Perfil y Configuración (Pantallas 07 y 10).
- */
 export const DARK_THEME: ThemePalette = {
   isDark: true,
   background: '#0F172A',
@@ -68,13 +76,18 @@ export const DARK_THEME: ThemePalette = {
   dangerRed: '#EF4444',
   dangerRedSoft: '#450A0A',
   white: '#FFFFFF',
+
+  surface: '#1E293B',
+  surfaceMuted: '#334155',
+  primary: '#0D9488',
+  primaryLight: '#134E4A',
+  emerald: '#34D399',
+  emeraldLight: '#064E3B',
+  danger: '#EF4444',
+  dangerLight: '#450A0A',
+  dangerBorder: '#7F1D1D',
 };
 
-/**
- * Obtiene la paleta de colores activa según el estado del modo oscuro.
- * @param {boolean} isDarkMode - Indica si el modo oscuro está activo.
- * @returns {ThemePalette} Paleta de colores correspondiente.
- */
 export function getThemePalette(isDarkMode: boolean): ThemePalette {
   return isDarkMode ? DARK_THEME : LIGHT_THEME;
 }
