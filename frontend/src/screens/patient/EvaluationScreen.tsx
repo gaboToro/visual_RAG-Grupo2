@@ -2,6 +2,8 @@ import React from 'react';
 import {
   View,
   Text,
+  TextInput,
+  Image,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
@@ -18,12 +20,25 @@ import {
   WoundIncisionGraphic,
 } from '../../components/icons/FigmaIcons';
 
+function isRealImageUri(uri: string): boolean {
+  return (
+    uri.startsWith('http') ||
+    uri.startsWith('file:') ||
+    uri.startsWith('content:') ||
+    uri.startsWith('data:image') ||
+    uri.startsWith('blob:')
+  );
+}
+
 export function EvaluationScreen(): React.JSX.Element {
   const {
     currentUser,
     postOpRecords,
     capturedPhotos,
+    patientNotes,
+    setPatientNotes,
     addCapturedPhoto,
+    removeCapturedPhoto,
     clearCapturedPhotos,
     evaluateCapturedWoundPhotos,
     isEvaluatingRag,
@@ -173,12 +188,43 @@ export function EvaluationScreen(): React.JSX.Element {
             <View style={styles.previewGrid}>
               {capturedPhotos.map((item, idx) => (
                 <View key={`${item}-${idx}`} style={styles.previewThumb}>
-                  <WoundIncisionGraphic variant={idx % 2 === 0 ? 1 : 2} />
+                  {isRealImageUri(item) ? (
+                    <Image source={{ uri: item }} style={styles.previewImage} />
+                  ) : (
+                    <WoundIncisionGraphic variant={idx % 2 === 0 ? 1 : 2} />
+                  )}
                   <View style={styles.previewBadge}>
                     <Text style={styles.previewBadgeText}>Foto #{idx + 1}</Text>
                   </View>
+                  <TouchableOpacity
+                    style={styles.removePhotoPill}
+                    activeOpacity={0.8}
+                    onPress={() => removeCapturedPhoto(idx)}
+                  >
+                    <Text style={styles.removePhotoPillText}>×</Text>
+                  </TouchableOpacity>
                 </View>
               ))}
+            </View>
+
+            <View style={styles.notesInputContainer}>
+              <Text style={[styles.notesLabel, { color: theme.textSecondary }]}>
+                Notas o síntomas observables (opcional):
+              </Text>
+              <TextInput
+                value={patientNotes}
+                onChangeText={setPatientNotes}
+                placeholder="Ej. sin dolor, borde engrosado/roja o granulación temprana..."
+                placeholderTextColor={theme.textSecondary}
+                style={[
+                  styles.notesInput,
+                  {
+                    color: theme.textPrimary,
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              />
             </View>
 
             <View style={styles.previewActionsRow}>
@@ -363,6 +409,44 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 9,
     fontWeight: '600',
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  removePhotoPill: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  removePhotoPillText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 15,
+  },
+  notesInputContainer: {
+    width: '100%',
+    marginBottom: 12,
+  },
+  notesLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  notesInput: {
+    height: 38,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    fontSize: 12,
   },
   previewActionsRow: {
     flexDirection: 'row',
