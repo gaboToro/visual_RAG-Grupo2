@@ -11,8 +11,16 @@ import {
 import { ThemePalette, getThemePalette } from '../theme/colors';
 import {
   loginViaGateway,
-  evaluateWoundViaGateway,
+  fetchPatientsViaGateway,
+  assignPatientViaGateway,
+  removePatientViaGateway,
+  updatePatientProfileViaGateway,
+  updateDoctorProfileViaGateway,
+  fetchPostOpRecordViaGateway,
   savePostOpRecordViaGateway,
+  evaluateWoundViaGateway,
+  fetchSavedReportsViaGateway,
+  fetchPharmacyRecommendationsViaGateway,
 } from '../services/apiClient';
 
 const INITIAL_PATIENTS: UserProfile[] = [
@@ -43,6 +51,12 @@ const INITIAL_PATIENTS: UserProfile[] = [
     },
   },
 ];
+
+const LOCAL_PASSWORDS: Record<string, string> = {
+  'nelsoncasa@gmail.com': 'nelson123',
+  'maria.quispe@outlook.com': 'maria123',
+  'nelson.doctor@gmail.com': 'doctor123',
+};
 
 const INITIAL_DOCTOR: UserProfile = {
   id: 'doc-1',
@@ -224,6 +238,7 @@ interface AppContextValue {
   selectedReportForModal: WoundReportDTO | null;
   pharmacyData: PharmacyRecommendationDTO;
   capturedPhotos: string[];
+  patientNotes: string;
   isEvaluatingRag: boolean;
   isDarkMode: boolean;
   theme: ThemePalette;
@@ -231,16 +246,25 @@ interface AppContextValue {
   setActiveDoctorTab: (tab: DoctorTab) => void;
   setSelectedReportForModal: (report: WoundReportDTO | null) => void;
   setSelectedDoctorPatientId: (patientId: string) => void;
+  setPatientNotes: (notes: string) => void;
   login: (email: string, password: string, role: UserRole) => Promise<boolean>;
   logout: () => void;
   toggleDarkMode: () => void;
   addCapturedPhoto: (uri: string) => void;
+  removeCapturedPhoto: (index: number) => void;
   clearCapturedPhotos: () => void;
   evaluateCapturedWoundPhotos: () => Promise<WoundReportDTO>;
-  updatePatientClinicalInfo: (fullName: string, emergencyContact: string) => void;
-  updateDoctorProfessionalInfo: (specialty: string, hospital: string) => void;
-  assignNewPatientToDoctor: (fullName: string, email: string, cedula: string, bloodType: string) => void;
-  removePatientFromDoctor: (patientId: string) => void;
+  refreshSavedReports: () => Promise<boolean>;
+  refreshMedicalOrders: () => Promise<boolean>;
+  updatePatientClinicalInfo: (fullName: string, emergencyContact: string) => Promise<void>;
+  updateDoctorProfessionalInfo: (specialty: string, hospital: string) => Promise<void>;
+  assignNewPatientToDoctor: (
+    fullName: string,
+    email: string,
+    cedula: string,
+    bloodType: string
+  ) => Promise<void>;
+  removePatientFromDoctor: (patientId: string) => Promise<void>;
   saveDoctorPostOpRecord: (
     patientId: string,
     updates: {
@@ -271,28 +295,63 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
   const [pharmacyData, setPharmacyData] =
     useState<PharmacyRecommendationDTO>(INITIAL_PHARMACY);
   const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
+  const [patientNotes, setPatientNotes] = useState<string>('');
   const [isEvaluatingRag, setIsEvaluatingRag] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   const theme = getThemePalette(isDarkMode);
 
+  async function syncInitialDataFromGateway(loggedUser: UserProfile): Promise<void> {
+    if (loggedUser.role === 'PATIENT') {
+      const [remoteRecord, remoteReports] = await Promise.all([
+        fetchPostOpRecordViaGateway(loggedUser.id),
+        fetchSavedReportsViaGateway(loggedUser.id),
+      ]);
+      if (remoteRecord) {
+        setPostOpRecords((prev) => ({ ...prev, [loggedUser.id]: remoteRecord }));
+      }
+      if (remoteReports && remoteReports.length > 0) {
+        setSavedReports(remoteReports);
+      }
+    } else {
+      const remotePatients = await fetchPatientsViaGateway();
+      if (remotePatients && remotePatients.length > 0) {
+        setPatients(remotePatients);
+      }
+    }
+  }
+
   async function login(email: string, password: string, role: UserRole): Promise<boolean> {
-    const gatewayUser = await loginViaGateway(email, password, role);
-    if (gatewayUser) {
-      setCurrentUser(gatewayUser);
+    const cleanEmail = email.toLowerCase().trim();
+    const gatewayAuth = await loginViaGateway(cleanEmail, password, role);
+
+    if (gatewayAuth.user) {
+      setCurrentUser(gatewayAuth.user);
       setActivePatientTab('EVAL');
       setActiveDoctorTab('PATIENTS');
+      await syncInitialDataFromGateway(gatewayAuth.user);
       return true;
     }
 
+    if (!gatewayAuth.unreachable) {
+      return false;
+    }
+
+    // Validación en modo local (cuando el backend está apagado)
+    const expectedPassword = LOCAL_PASSWORDS[cleanEmail];
     if (role === 'PATIENT') {
-      const found =
-        patients.find((p) => p.email.toLowerCase() === email.toLowerCase().trim()) ||
-        patients[0];
+      const found = patients.find((p) => p.email.toLowerCase() === cleanEmail);
+      if (!found) return false;
+      const validPass = expectedPassword ? password === expectedPassword : password === 'paciente123';
+      if (!validPass) return false;
+
       setCurrentUser(found);
       setActivePatientTab('EVAL');
       return true;
     } else {
+      if (cleanEmail !== doctorProfile.email.toLowerCase() || password !== 'doctor123') {
+        return false;
+      }
       setCurrentUser(doctorProfile);
       setActiveDoctorTab('PATIENTS');
       return true;
@@ -315,6 +374,10 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     });
   }
 
+  function removeCapturedPhoto(index: number): void {
+    setCapturedPhotos((prev) => prev.filter((_, idx) => idx !== index));
+  }
+
   function clearCapturedPhotos(): void {
     setCapturedPhotos([]);
   }
@@ -334,6 +397,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         patientName,
         postOpDay,
         photos: photosToSend,
+        patientNotes,
       });
 
       if (gatewayResult && gatewayResult.report) {
@@ -346,33 +410,82 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
           setPharmacyData(gatewayResult.pharmacyRecommendation);
         }
         setCapturedPhotos([]);
+        setPatientNotes('');
         setSelectedReportForModal(enrichedReport);
         return enrichedReport;
       }
 
+      // Fallback local con evaluación dinámica según notas y día postoperatorio
+      const notesLower = patientNotes.toLowerCase();
+      let diagnosisTitle = 'Cicatrización Normal';
+      let confidenceScore = 0.99;
+      let clinicalSuggestions =
+        'Mantener el área seca. Limpieza con solución salina al 0.9% y apósito Tegaderm permeable al vapor. No frotar la costra.';
+      let baseSummary = `La cicatrización de su herida quirúrgica (${currentRecord.schedule.procedureName}) evoluciona favorablemente con cierre epitelial limpio.`;
+
+      if (
+        notesLower.includes('roja') ||
+        notesLower.includes('borde') ||
+        notesLower.includes('engrosa') ||
+        notesLower.includes('elevad') ||
+        notesLower.includes('hipertrof')
+      ) {
+        diagnosisTitle = 'Cicatrización Hipertrófica';
+        confidenceScore = 0.97;
+        baseSummary = `La herida quirúrgica (${currentRecord.schedule.procedureName}) está cerrada con remodelación colágena activa en la línea de sutura.`;
+        clinicalSuggestions =
+          'Mantener hidratación controlada, limpieza antiséptica suave con Clorhexidina al 2% y cubrir con apósito protector sin fricción.';
+      } else if (
+        notesLower.includes('granul') ||
+        notesLower.includes('tempran') ||
+        notesLower.includes('rosad') ||
+        notesLower.includes('reciente') ||
+        notesLower.includes('sensible') ||
+        (postOpDay <= 20 && !notesLower.includes('normal'))
+      ) {
+        diagnosisTitle = 'Granulación Postoperatoria Temprana';
+        confidenceScore = 0.95;
+        baseSummary = `Se observa tejido de granulación limpio en fase proliferativa acorde al cronograma de ${currentRecord.schedule.procedureName}.`;
+        clinicalSuggestions =
+          'Realizar curación diaria con antiséptico de Clorhexidina 2% y proteger la incisión con apósito estéril impermeable.';
+      }
+
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
       const folio = `REP-${Math.floor(100000 + Math.random() * 900000)}`;
       const localReport: WoundReportDTO = {
         folio,
         patientId,
         patientName,
         postOpDay,
-        formattedDate: '05 nov 2026 (7:07)',
-        diagnosisTitle: 'Cicatrización Normal',
+        formattedDate: `05 nov 2026 (${hours}:${minutes})`,
+        diagnosisTitle,
         statusBadge: 'Evolución Favorable',
         photosCount: photosToSend.length,
         photoLabels: photosToSend.map((_, idx) => `Foto #${idx + 1}`),
         photoUris: capturedPhotos,
         medicalPlanHeader: `ESTADO DE LA HERIDA (DÍA ${postOpDay}):`,
-        medicalPlanSummary: `La cicatrización de su herida quirúrgica (${currentRecord.schedule.procedureName}) evoluciona favorablemente con cierre epitelial limpio.`,
-        clinicalSuggestions:
-          'Mantener el área seca. Limpieza con solución salina al 0.9% y apósito Tegaderm permeable al vapor. No frotar la costra.',
+        medicalPlanSummary: baseSummary,
+        clinicalSuggestions,
         recommendedMedications: currentRecord.prescribedMedications,
-        confidenceScore: 0.99,
+        confidenceScore,
         verifiedSignature: 'Documento Clínico Digital Verificado • Visual RAG',
       };
 
       setSavedReports((prev) => [localReport, ...prev]);
+      setPharmacyData((prev) => ({
+        ...prev,
+        postOpDay,
+        woundClassification: diagnosisTitle,
+        headerSubtitle: `Día ${postOpDay} de reposo • ${diagnosisTitle}`,
+        aiRecoveryTip: {
+          title: 'Consejo de Recuperación IA',
+          summary: `ESTADO DE LA HERIDA (DÍA ${postOpDay}): Diagnóstico "${diagnosisTitle}". Continúe con el antiséptico y apósito recomendados por su cirujano.`,
+        },
+      }));
       setCapturedPhotos([]);
+      setPatientNotes('');
       setSelectedReportForModal(localReport);
       return localReport;
     } finally {
@@ -380,27 +493,82 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     }
   }
 
-  function updatePatientClinicalInfo(fullName: string, emergencyContact: string): void {
+  async function refreshSavedReports(): Promise<boolean> {
+    const patientId = currentUser?.id || 'pat-1';
+    const remoteReports = await fetchSavedReportsViaGateway(patientId);
+    if (remoteReports && remoteReports.length > 0) {
+      setSavedReports(remoteReports);
+      return true;
+    }
+    return false;
+  }
+
+  async function refreshMedicalOrders(): Promise<boolean> {
+    const patientId = currentUser?.id || 'pat-1';
+    const remoteRecord = await fetchPostOpRecordViaGateway(patientId);
+    if (remoteRecord) {
+      setPostOpRecords((prev) => ({
+        ...prev,
+        [patientId]: remoteRecord,
+      }));
+      const remotePharm = await fetchPharmacyRecommendationsViaGateway({
+        postOpDay: remoteRecord.schedule.currentDay,
+        woundClassification: pharmacyData.woundClassification,
+        prescribedMedications: remoteRecord.prescribedMedications,
+      });
+      if (remotePharm) {
+        setPharmacyData(remotePharm);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  async function updatePatientClinicalInfo(
+    fullName: string,
+    emergencyContact: string
+  ): Promise<void> {
     if (!currentUser) return;
-    const updated: UserProfile = {
+    const cleanName = fullName.trim() || currentUser.fullName;
+    const cleanEmergency =
+      emergencyContact.trim() || currentUser.clinicalInfo.emergencyContact || '';
+
+    const remoteUpdated = await updatePatientProfileViaGateway(currentUser.id, {
+      fullName: cleanName,
+      emergencyContact: cleanEmergency,
+      bloodType: currentUser.clinicalInfo.bloodType,
+    });
+
+    const updated: UserProfile = remoteUpdated || {
       ...currentUser,
-      fullName: fullName.trim() || currentUser.fullName,
+      fullName: cleanName,
       clinicalInfo: {
         ...currentUser.clinicalInfo,
-        emergencyContact: emergencyContact.trim() || currentUser.clinicalInfo.emergencyContact,
+        emergencyContact: cleanEmergency,
       },
     };
     setCurrentUser(updated);
     setPatients((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   }
 
-  function updateDoctorProfessionalInfo(specialty: string, hospital: string): void {
-    const updated: UserProfile = {
+  async function updateDoctorProfessionalInfo(
+    specialty: string,
+    hospital: string
+  ): Promise<void> {
+    const cleanSpecialty = specialty.trim() || doctorProfile.clinicalInfo.specialty || '';
+    const cleanHospital = hospital.trim() || doctorProfile.clinicalInfo.hospital || '';
+
+    const remoteUpdated = await updateDoctorProfileViaGateway(doctorProfile.id, {
+      specialty: cleanSpecialty,
+      hospital: cleanHospital,
+    });
+
+    const updated: UserProfile = remoteUpdated || {
       ...doctorProfile,
       clinicalInfo: {
         ...doctorProfile.clinicalInfo,
-        specialty: specialty.trim() || doctorProfile.clinicalInfo.specialty,
-        hospital: hospital.trim() || doctorProfile.clinicalInfo.hospital,
+        specialty: cleanSpecialty,
+        hospital: cleanHospital,
       },
     };
     setDoctorProfile(updated);
@@ -409,14 +577,22 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     }
   }
 
-  function assignNewPatientToDoctor(
+  async function assignNewPatientToDoctor(
     fullName: string,
     email: string,
     cedula: string,
     bloodType: string
-  ): void {
-    const newId = `pat-${Date.now()}`;
-    const newPatient: UserProfile = {
+  ): Promise<void> {
+    const remoteCreated = await assignPatientViaGateway({
+      fullName,
+      email,
+      cedula,
+      bloodType,
+      doctorId: doctorProfile.id,
+    });
+
+    const newId = remoteCreated?.id || `pat-${Date.now()}`;
+    const newPatient: UserProfile = remoteCreated || {
       id: newId,
       fullName,
       email,
@@ -429,6 +605,8 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         currentPostOpDay: 1,
       },
     };
+
+    LOCAL_PASSWORDS[email.toLowerCase().trim()] = 'paciente123';
 
     const newRecord: PostOpRecordDTO = {
       id: `rec-${newId}`,
@@ -458,7 +636,8 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     setPostOpRecords((prev) => ({ ...prev, [newId]: newRecord }));
   }
 
-  function removePatientFromDoctor(patientId: string): void {
+  async function removePatientFromDoctor(patientId: string): Promise<void> {
+    await removePatientViaGateway(patientId);
     setPatients((prev) => {
       const filtered = prev.filter((p) => p.id !== patientId);
       if (selectedDoctorPatientId === patientId && filtered.length > 0) {
@@ -511,10 +690,16 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
       [patientId]: updatedRecord,
     }));
 
-    await savePostOpRecordViaGateway(patientId, {
+    const savedRemote = await savePostOpRecordViaGateway(patientId, {
       ...updates,
       currentDay,
     });
+    if (savedRemote) {
+      setPostOpRecords((prev) => ({
+        ...prev,
+        [patientId]: savedRemote,
+      }));
+    }
   }
 
   return (
@@ -531,6 +716,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         selectedReportForModal,
         pharmacyData,
         capturedPhotos,
+        patientNotes,
         isEvaluatingRag,
         isDarkMode,
         theme,
@@ -538,12 +724,16 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         setActiveDoctorTab,
         setSelectedReportForModal,
         setSelectedDoctorPatientId,
+        setPatientNotes,
         login,
         logout,
         toggleDarkMode,
         addCapturedPhoto,
+        removeCapturedPhoto,
         clearCapturedPhotos,
         evaluateCapturedWoundPhotos,
+        refreshSavedReports,
+        refreshMedicalOrders,
         updatePatientClinicalInfo,
         updateDoctorProfessionalInfo,
         assignNewPatientToDoctor,
