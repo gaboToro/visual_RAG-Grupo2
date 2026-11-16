@@ -16,7 +16,7 @@ import {
 } from '../../components/icons/FigmaIcons';
 
 export function SavedReportsScreen(): React.JSX.Element {
-  const { savedReports, setSelectedReportForModal, theme } = useApp();
+  const { savedReports, setSelectedReportForModal, refreshSavedReports, theme } = useApp();
 
   function handleOpenReportDetail(report: WoundReportDTO): void {
     setSelectedReportForModal(report);
@@ -30,10 +30,13 @@ export function SavedReportsScreen(): React.JSX.Element {
     );
   }
 
-  function handleRefreshReports(): void {
+  async function handleRefreshReports(): Promise<void> {
+    const synced = await refreshSavedReports();
     Alert.alert(
       'Sincronizado',
-      'Los reportes clínicos están actualizados con el servidor Visual RAG.'
+      synced
+        ? 'Los reportes clínicos se han sincronizado desde el microservicio Visual RAG.'
+        : 'Los reportes clínicos locales están al día.'
     );
   }
 
