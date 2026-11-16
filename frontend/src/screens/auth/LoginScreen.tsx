@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { useApp } from '../../context/AppContext';
@@ -81,9 +82,23 @@ export function LoginScreen(): React.JSX.Element {
   }
 
   async function handleLoginSubmit(): Promise<void> {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert(
+        'Campos incompletos',
+        'Por favor ingresa tu correo electrónico y contraseña.'
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await login(email, password, selectedRole);
+      const ok = await login(email, password, selectedRole);
+      if (!ok) {
+        Alert.alert(
+          'Credenciales Inválidas',
+          'El correo o contraseña no corresponden al rol seleccionado. Verifica las credenciales e inténtalo nuevamente.'
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
