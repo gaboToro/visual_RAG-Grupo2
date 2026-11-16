@@ -17,6 +17,17 @@ import {
   DownloadPdfIcon,
 } from '../icons/FigmaIcons';
 
+function isRealImageUri(uri?: string): boolean {
+  if (!uri) return false;
+  return (
+    uri.startsWith('http') ||
+    uri.startsWith('file:') ||
+    uri.startsWith('content:') ||
+    uri.startsWith('data:image') ||
+    uri.startsWith('blob:')
+  );
+}
+
 export function ReportDetailModal(): React.JSX.Element | null {
   const { selectedReportForModal, setSelectedReportForModal, theme } = useApp();
 
@@ -106,7 +117,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
             <View style={styles.photosRow}>
               { }
               <View style={styles.photoCard}>
-                {customUris[0] && customUris[0].startsWith('http') ? (
+                {isRealImageUri(customUris[0]) ? (
                   <Image source={{ uri: customUris[0] }} style={styles.capturedImage} />
                 ) : (
                   <View style={styles.graphicCenter}>
@@ -120,7 +131,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
 
               { }
               <View style={styles.photoCard}>
-                {customUris[1] && customUris[1].startsWith('http') ? (
+                {isRealImageUri(customUris[1]) ? (
                   <Image source={{ uri: customUris[1] }} style={styles.capturedImage} />
                 ) : (
                   <View style={styles.graphicCenter}>
