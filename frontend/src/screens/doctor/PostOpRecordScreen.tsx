@@ -82,16 +82,28 @@ export function PostOpRecordScreen(): React.JSX.Element {
     setNewProhibitedText('');
   }
 
+  function handleRemoveProhibitedAction(index: number): void {
+    setProhibitedList((prev) => prev.filter((_, idx) => idx !== index));
+  }
+
   function handleAddAllowedCare(): void {
     if (!newCareText.trim()) return;
     setAllowedCaresList((prev) => [...prev, newCareText.trim()]);
     setNewCareText('');
   }
 
+  function handleRemoveAllowedCare(index: number): void {
+    setAllowedCaresList((prev) => prev.filter((_, idx) => idx !== index));
+  }
+
   function handleAddAllergyAlert(): void {
     if (!newAllergyText.trim()) return;
     setAllergiesList((prev) => [...prev, newAllergyText.trim()]);
     setNewAllergyText('');
+  }
+
+  function handleRemoveAllergyAlert(index: number): void {
+    setAllergiesList((prev) => prev.filter((_, idx) => idx !== index));
   }
 
   async function handleSavePostOpFicha(): Promise<void> {
@@ -209,19 +221,55 @@ export function PostOpRecordScreen(): React.JSX.Element {
               />
             </View>
 
-            <View
-              style={[
-                styles.fieldInputBox,
-                {
-                  backgroundColor: theme.background,
-                  borderColor: theme.border,
-                  marginBottom: 0,
-                },
-              ]}
-            >
-              <Text style={[styles.fieldInputText, { color: theme.textPrimary }]}>
-                Fecha: {surgeryDate} • Días Reposo: {totalRestDays}
-              </Text>
+            <View style={styles.scheduleTwoCols}>
+              <View style={styles.scheduleCol}>
+                <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>
+                  Fecha de Cirugía:
+                </Text>
+                <View
+                  style={[
+                    styles.fieldInputBox,
+                    {
+                      backgroundColor: theme.background,
+                      borderColor: theme.border,
+                      marginBottom: 0,
+                    },
+                  ]}
+                >
+                  <TextInput
+                    value={surgeryDate}
+                    onChangeText={setSurgeryDate}
+                    style={[styles.fieldInputText, { color: theme.textPrimary }]}
+                    placeholder="2026-08-19"
+                    placeholderTextColor={theme.textSecondary}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.scheduleColSmall}>
+                <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>
+                  Días Reposo:
+                </Text>
+                <View
+                  style={[
+                    styles.fieldInputBox,
+                    {
+                      backgroundColor: theme.background,
+                      borderColor: theme.border,
+                      marginBottom: 0,
+                    },
+                  ]}
+                >
+                  <TextInput
+                    value={totalRestDays}
+                    onChangeText={setTotalRestDays}
+                    keyboardType="numeric"
+                    style={[styles.fieldInputText, { color: theme.textPrimary }]}
+                    placeholder="10"
+                    placeholderTextColor={theme.textSecondary}
+                  />
+                </View>
+              </View>
             </View>
           </View>
         )}
@@ -275,6 +323,14 @@ export function PostOpRecordScreen(): React.JSX.Element {
                 <Text style={[styles.listItemText, { color: theme.textPrimary }]}>
                   • {item}
                 </Text>
+                <TouchableOpacity
+                  style={styles.removeItemBtn}
+                  onPress={() => handleRemoveProhibitedAction(idx)}
+                >
+                  <Text style={[styles.removeItemBtnText, { color: theme.danger }]}>
+                    ×
+                  </Text>
+                </TouchableOpacity>
               </View>
             ))}
 
@@ -352,6 +408,14 @@ export function PostOpRecordScreen(): React.JSX.Element {
                 <Text style={[styles.listItemText, { color: theme.textPrimary }]}>
                   • {item}
                 </Text>
+                <TouchableOpacity
+                  style={styles.removeItemBtn}
+                  onPress={() => handleRemoveAllowedCare(idx)}
+                >
+                  <Text style={[styles.removeItemBtnText, { color: theme.danger }]}>
+                    ×
+                  </Text>
+                </TouchableOpacity>
               </View>
             ))}
 
@@ -429,6 +493,14 @@ export function PostOpRecordScreen(): React.JSX.Element {
                 <Text style={[styles.listItemText, { color: theme.textPrimary }]}>
                   • {item}
                 </Text>
+                <TouchableOpacity
+                  style={styles.removeItemBtn}
+                  onPress={() => handleRemoveAllergyAlert(idx)}
+                >
+                  <Text style={[styles.removeItemBtnText, { color: theme.danger }]}>
+                    ×
+                  </Text>
+                </TouchableOpacity>
               </View>
             ))}
 
@@ -583,17 +655,40 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
+  scheduleTwoCols: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  scheduleCol: {
+    flex: 1.5,
+  },
+  scheduleColSmall: {
+    flex: 1,
+  },
   listItemRow: {
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   listItemText: {
+    flex: 1,
     fontSize: 11,
     fontWeight: '500',
     lineHeight: 16,
+  },
+  removeItemBtn: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginLeft: 6,
+  },
+  removeItemBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
   },
   addRow: {
     flexDirection: 'row',
