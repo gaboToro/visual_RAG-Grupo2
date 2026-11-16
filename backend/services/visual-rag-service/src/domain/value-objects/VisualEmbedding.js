@@ -13,8 +13,26 @@ class VisualEmbedding {
     const notesLower = (patientNotes || '').toLowerCase();
     const photoSeed = photos.length > 0 ? String(photos[0]?.uri || photos[0] || '') : 'default';
 
-    if (notesLower.includes('roja') || notesLower.includes('borde') || photoSeed.includes('hypertrophic')) {
+    if (
+      notesLower.includes('roja') ||
+      notesLower.includes('borde') ||
+      notesLower.includes('engrosa') ||
+      notesLower.includes('elevad') ||
+      notesLower.includes('hipertrof') ||
+      photoSeed.includes('hypertrophic')
+    ) {
       return new VisualEmbedding([0.92, 0.85, 0.32, 0.24, 0.05, 0.78]);
+    }
+
+    if (
+      notesLower.includes('granul') ||
+      notesLower.includes('tempran') ||
+      notesLower.includes('rosad') ||
+      notesLower.includes('reciente') ||
+      notesLower.includes('sensible') ||
+      (postOpDay <= 20 && !notesLower.includes('normal'))
+    ) {
+      return new VisualEmbedding([0.84, 0.78, 0.25, 0.20, 0.10, 0.82]);
     }
 
     const maturityFactor = Math.min(1.0, Math.max(0.75, postOpDay / 80));
