@@ -31,11 +31,11 @@ export function DoctorProfileScreen(): React.JSX.Element {
     doctorProfile.clinicalInfo.hospital || 'Hospital Metropolitano'
   );
 
-  function handleSaveProfessionalData(): void {
-    updateDoctorProfessionalInfo(specialty, hospital);
+  async function handleSaveProfessionalData(): Promise<void> {
+    await updateDoctorProfessionalInfo(specialty, hospital);
     Alert.alert(
       'Datos Profesionales Guardados',
-      'Su especialidad y centro hospitalario se han actualizado correctamente.'
+      'Su especialidad y centro hospitalario se han actualizado y sincronizado correctamente.'
     );
   }
 
@@ -79,7 +79,7 @@ export function DoctorProfileScreen(): React.JSX.Element {
 
             <View style={[styles.hospBadge, { backgroundColor: theme.surfaceMuted }]}>
               <Text style={[styles.hospBadgeText, { color: theme.textSecondary }]}>
-                H. Metropolitano
+                {doctorProfile.clinicalInfo.hospital || 'H. Metropolitano'}
               </Text>
             </View>
           </View>

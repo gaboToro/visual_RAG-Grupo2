@@ -31,11 +31,11 @@ export function PatientProfileScreen(): React.JSX.Element {
     currentUser?.clinicalInfo?.emergencyContact || 'Carmen Casa (Madre) - 0987654321'
   );
 
-  function handleSaveClinicalData(): void {
-    updatePatientClinicalInfo(fullName, emergencyContact);
+  async function handleSaveClinicalData(): Promise<void> {
+    await updatePatientClinicalInfo(fullName, emergencyContact);
     Alert.alert(
       'Datos Clínicos Guardados',
-      'La información clínica del paciente se ha actualizado correctamente.'
+      'La información clínica del paciente se ha actualizado y sincronizado correctamente.'
     );
   }
 
