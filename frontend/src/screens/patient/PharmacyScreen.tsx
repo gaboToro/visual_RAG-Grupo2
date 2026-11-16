@@ -76,7 +76,7 @@ export function PharmacyScreen(): React.JSX.Element {
           </Text>
         </View>
         <Text style={[styles.aiTipSummary, { color: theme.textPrimary }]}>
-          ESTADO DE LA HERIDA (DÍA {pharmacyData.postOpDay}):
+          {pharmacyData.aiRecoveryTip.summary}
         </Text>
       </View>
 

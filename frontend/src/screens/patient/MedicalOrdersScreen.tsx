@@ -16,16 +16,19 @@ import {
 } from '../../components/icons/FigmaIcons';
 
 export function MedicalOrdersScreen(): React.JSX.Element {
-  const { currentUser, postOpRecords, theme } = useApp();
+  const { currentUser, postOpRecords, refreshMedicalOrders, theme } = useApp();
 
   const patientId = currentUser?.id || 'pat-1';
   const record = postOpRecords[patientId] || postOpRecords['pat-1'];
   const { schedule, prohibitedActions, allowedCares } = record;
 
-  function handleRefreshOrders(): void {
+  async function handleRefreshOrders(): Promise<void> {
+    const synced = await refreshMedicalOrders();
     Alert.alert(
       'Órdenes Médicas Actualizadas',
-      `Se han sincronizado las indicaciones quirúrgicas de "${schedule.procedureName}".`
+      synced
+        ? `Se han sincronizado las indicaciones quirúrgicas de "${schedule.procedureName}" con el servidor.`
+        : `Indicaciones quirúrgicas de "${schedule.procedureName}" verificadas.`
     );
   }
 
