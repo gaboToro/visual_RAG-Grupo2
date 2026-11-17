@@ -43,6 +43,9 @@ export function PostOpRecordScreen(): React.JSX.Element {
   const [totalRestDays, setTotalRestDays] = useState<string>(
     String(activeRecord.schedule.totalRestDays)
   );
+  const [currentPostOpDay, setCurrentPostOpDay] = useState<string>(
+    String(activeRecord.schedule.currentDay)
+  );
   const [prohibitedList, setProhibitedList] = useState<string[]>(
     activeRecord.prohibitedActions
   );
@@ -52,17 +55,23 @@ export function PostOpRecordScreen(): React.JSX.Element {
   const [allergiesList, setAllergiesList] = useState<string[]>(
     activeRecord.allergiesAndAlerts
   );
+  const [medicationsList, setMedicationsList] = useState<string[]>(
+    activeRecord.prescribedMedications || []
+  );
   const [newProhibitedText, setNewProhibitedText] = useState<string>('');
   const [newCareText, setNewCareText] = useState<string>('');
   const [newAllergyText, setNewAllergyText] = useState<string>('');
+  const [newMedicationText, setNewMedicationText] = useState<string>('');
 
   useEffect(() => {
     setProcedureName(activeRecord.schedule.procedureName);
     setSurgeryDate(activeRecord.schedule.surgeryDate);
     setTotalRestDays(String(activeRecord.schedule.totalRestDays));
+    setCurrentPostOpDay(String(activeRecord.schedule.currentDay));
     setProhibitedList(activeRecord.prohibitedActions);
     setAllowedCaresList(activeRecord.allowedCares);
     setAllergiesList(activeRecord.allergiesAndAlerts);
+    setMedicationsList(activeRecord.prescribedMedications || []);
   }, [selectedDoctorPatientId, activeRecord]);
 
   function handleCycleSelectedPatient(): void {
@@ -106,14 +115,26 @@ export function PostOpRecordScreen(): React.JSX.Element {
     setAllergiesList((prev) => prev.filter((_, idx) => idx !== index));
   }
 
+  function handleAddMedication(): void {
+    if (!newMedicationText.trim()) return;
+    setMedicationsList((prev) => [...prev, newMedicationText.trim()]);
+    setNewMedicationText('');
+  }
+
+  function handleRemoveMedication(index: number): void {
+    setMedicationsList((prev) => prev.filter((_, idx) => idx !== index));
+  }
+
   async function handleSavePostOpFicha(): Promise<void> {
     await saveDoctorPostOpRecord(currentPatient.id, {
       procedureName: procedureName.trim() || 'Correcion Neuronal',
       surgeryDate: surgeryDate.trim() || '2026-08-19',
-      totalRestDays: Number(totalRestDays) || 10,
+      totalRestDays: Math.max(1, Number(totalRestDays) || 10),
+      currentDay: Math.max(1, Number(currentPostOpDay) || activeRecord.schedule.currentDay),
       prohibitedActions: prohibitedList,
       allowedCares: allowedCaresList,
       allergiesAndAlerts: allergiesList,
+      prescribedMedications: medicationsList,
     });
 
     Alert.alert(
@@ -241,6 +262,31 @@ export function PostOpRecordScreen(): React.JSX.Element {
                     onChangeText={setSurgeryDate}
                     style={[styles.fieldInputText, { color: theme.textPrimary }]}
                     placeholder="2026-08-19"
+                    placeholderTextColor={theme.textSecondary}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.scheduleColSmall}>
+                <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>
+                  Día Actual:
+                </Text>
+                <View
+                  style={[
+                    styles.fieldInputBox,
+                    {
+                      backgroundColor: theme.background,
+                      borderColor: theme.border,
+                      marginBottom: 0,
+                    },
+                  ]}
+                >
+                  <TextInput
+                    value={currentPostOpDay}
+                    onChangeText={setCurrentPostOpDay}
+                    keyboardType="numeric"
+                    style={[styles.fieldInputText, { color: theme.textPrimary }]}
+                    placeholder="1"
                     placeholderTextColor={theme.textSecondary}
                   />
                 </View>
@@ -522,6 +568,90 @@ export function PostOpRecordScreen(): React.JSX.Element {
               <TouchableOpacity
                 style={[styles.addSmallBtn, { backgroundColor: theme.primary }]}
                 onPress={handleAddAllergyAlert}
+              >
+                <Text style={styles.addSmallBtnText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </View>
+
+      <View
+        style={[
+          styles.accordionCard,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.accordionHeaderRow}
+          activeOpacity={0.8}
+          onPress={() => handleToggleSection(5)}
+        >
+          <View style={styles.accordionLeftRow}>
+            <AllowedCareIcon size={34} />
+            <View style={styles.accordionTitleCol}>
+              <Text style={[styles.accordionTitle, { color: theme.textPrimary }]}>
+                5. Medicamentos e Insumos
+              </Text>
+              <Text style={[styles.accordionSubtitleMuted, { color: theme.textSecondary }]}>
+                {medicationsList.length} insumo(s) recetado(s)
+              </Text>
+            </View>
+          </View>
+
+          <Text style={[styles.chevronText, { color: theme.textSecondary }]}>
+            {expandedSection === 5 ? '^' : 'v'}
+          </Text>
+        </TouchableOpacity>
+
+        {expandedSection === 5 && (
+          <View style={styles.accordionBody}>
+            {medicationsList.map((item, idx) => (
+              <View
+                key={`med-${idx}`}
+                style={[
+                  styles.listItemRow,
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              >
+                <Text style={[styles.listItemText, { color: theme.textPrimary }]}>
+                  • {item}
+                </Text>
+                <TouchableOpacity
+                  style={styles.removeItemBtn}
+                  onPress={() => handleRemoveMedication(idx)}
+                >
+                  <Text style={[styles.removeItemBtnText, { color: theme.danger }]}>
+                    ×
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+
+            <View style={styles.addRow}>
+              <TextInput
+                value={newMedicationText}
+                onChangeText={setNewMedicationText}
+                placeholder="Ej. Gel de Silicona Cicatrizante 15g..."
+                placeholderTextColor={theme.textSecondary}
+                style={[
+                  styles.addInput,
+                  {
+                    color: theme.textPrimary,
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
+                ]}
+              />
+              <TouchableOpacity
+                style={[styles.addSmallBtn, { backgroundColor: theme.primary }]}
+                onPress={handleAddMedication}
               >
                 <Text style={styles.addSmallBtnText}>+</Text>
               </TouchableOpacity>

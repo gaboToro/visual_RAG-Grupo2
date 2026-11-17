@@ -66,7 +66,11 @@ export function DoctorPatientsScreen(): React.JSX.Element {
   }
 
   function handleConfirmAssignPatient(): void {
-    if (!newFullName.trim() || !newEmail.trim() || !newCedula.trim()) {
+    const cleanName = newFullName.trim();
+    const cleanEmail = newEmail.trim().toLowerCase();
+    const cleanCedula = newCedula.trim();
+
+    if (!cleanName || !cleanEmail || !cleanCedula) {
       Alert.alert(
         'Campos requeridos',
         'Por favor complete el nombre, correo electrónico y cédula del paciente.'
@@ -74,11 +78,29 @@ export function DoctorPatientsScreen(): React.JSX.Element {
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      Alert.alert('Correo inválido', 'Ingrese una dirección de correo electrónico válida.');
+      return;
+    }
+
+    if (!/^\d{10}$/.test(cleanCedula)) {
+      Alert.alert('Cédula inválida', 'La cédula de identidad debe contener 10 dígitos numéricos.');
+      return;
+    }
+
+    if (patients.some((p) => p.email.toLowerCase() === cleanEmail)) {
+      Alert.alert(
+        'Paciente duplicado',
+        'Ya existe un paciente registrado con ese correo electrónico.'
+      );
+      return;
+    }
+
     assignNewPatientToDoctor(
-      newFullName.trim(),
-      newEmail.trim(),
-      newCedula.trim(),
-      newBloodType.trim() || 'O+'
+      cleanName,
+      cleanEmail,
+      cleanCedula,
+      newBloodType.trim().toUpperCase() || 'O+'
     );
     setNewFullName('');
     setNewEmail('');
@@ -131,6 +153,25 @@ export function DoctorPatientsScreen(): React.JSX.Element {
         </View>
 
         { }
+        {filteredPatients.length === 0 && (
+          <View
+            style={[
+              styles.emptySearchBox,
+              {
+                backgroundColor: theme.surface,
+                borderColor: theme.border,
+              },
+            ]}
+          >
+            <Text style={[styles.emptySearchTitle, { color: theme.textPrimary }]}>
+              Sin resultados de búsqueda
+            </Text>
+            <Text style={[styles.emptySearchSub, { color: theme.textSecondary }]}>
+              No se encontraron pacientes que coincidan con &quot;{searchQuery}&quot;.
+            </Text>
+          </View>
+        )}
+
         {filteredPatients.map((patient) => {
           const isSelected = patient.id === selectedDoctorPatientId;
 
@@ -174,6 +215,12 @@ export function DoctorPatientsScreen(): React.JSX.Element {
                 <View style={[styles.bloodBadge, { backgroundColor: theme.primaryLight }]}>
                   <Text style={[styles.bloodBadgeText, { color: theme.primary }]}>
                     Grupo: {patient.clinicalInfo.bloodType || 'O+'}
+                  </Text>
+                </View>
+
+                <View style={[styles.ciBadge, { backgroundColor: theme.surfaceMuted }]}>
+                  <Text style={[styles.ciBadgeText, { color: theme.textPrimary }]}>
+                    Día {patient.clinicalInfo.currentPostOpDay || 1} PostOp
                   </Text>
                 </View>
               </View>
@@ -373,6 +420,22 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 12,
     fontWeight: '500',
+  },
+  emptySearchBox: {
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  emptySearchTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  emptySearchSub: {
+    fontSize: 12,
+    textAlign: 'center',
   },
   patientCard: {
     borderRadius: 16,
