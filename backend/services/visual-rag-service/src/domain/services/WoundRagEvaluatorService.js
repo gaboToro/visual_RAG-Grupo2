@@ -1,6 +1,30 @@
 const { VisualEmbedding } = require('../value-objects/VisualEmbedding');
 const { WoundEvaluationReport } = require('../entities/WoundEvaluationReport');
 
+const MONTHS_ES = [
+  'ene',
+  'feb',
+  'mar',
+  'abr',
+  'may',
+  'jun',
+  'jul',
+  'ago',
+  'sep',
+  'oct',
+  'nov',
+  'dic',
+];
+
+function formatSpanishClinicalDate(date = new Date()) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = MONTHS_ES[date.getMonth()] || 'nov';
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${day} ${month} ${year} (${hours}:${minutes})`;
+}
+
 class WoundRagEvaluatorService {
 
   constructor(woundDataset) {
@@ -33,18 +57,26 @@ class WoundRagEvaluatorService {
     const prescribedMeds =
       Array.isArray(doctorTreatment?.prescribedMedications) &&
       doctorTreatment.prescribedMedications.length > 0
-        ? doctorTreatment.prescribedMedications
+        ? Array.from(
+            new Set([
+              ...doctorTreatment.prescribedMedications,
+              ...(primaryMatch.recommendedActiveIngredients || []),
+            ])
+          )
         : primaryMatch.recommendedActiveIngredients;
 
     const randomDigits = Math.floor(100000 + Math.random() * 900000);
     const folio = `REP-${randomDigits}`;
     const photosCount = Math.max(1, Math.min(4, photos.length || 2));
     const photoLabels = Array.from({ length: photosCount }, (_, idx) => `Foto #${idx + 1}`);
+    const photoUris = Array.isArray(photos)
+      ? photos
+          .slice(0, 4)
+          .map((p) => (typeof p === 'string' ? p : p?.uri || ''))
+          .filter(Boolean)
+      : [];
 
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const formattedDate = `05 nov 2026 (${hours}:${minutes})`;
+    const formattedDate = formatSpanishClinicalDate(new Date());
 
     const augmentedSummary = `${primaryMatch.basePlanTemplate} Acorde a su cirugía (${procedureName}), continúe con el protocolo antiséptico indicado por su cirujano.`;
 
@@ -58,6 +90,8 @@ class WoundRagEvaluatorService {
       statusBadge: primaryMatch.statusBadge,
       photosCount,
       photoLabels,
+      photoUris,
+      patientNotes,
       medicalPlanHeader: `ESTADO DE LA HERIDA (DÍA ${postOpDay}):`,
       medicalPlanSummary: augmentedSummary,
       clinicalSuggestions: primaryMatch.clinicalSuggestions,
@@ -67,4 +101,4 @@ class WoundRagEvaluatorService {
   }
 }
 
-module.exports = { WoundRagEvaluatorService };
+module.exports = { WoundRagEvaluatorService, formatSpanishClinicalDate };

@@ -54,7 +54,29 @@ class InMemoryWoundReportRepository extends IWoundReportRepository {
       confidenceScore: 0.96,
     });
 
-    this.reports.push(report1, report2);
+    const report3 = new WoundEvaluationReport({
+      folio: 'REP-309412',
+      patientId: 'pat-2',
+      patientName: 'María Elena Quispe',
+      postOpDay: 14,
+      formattedDate: '14 nov 2026 (10:15)',
+      diagnosisTitle: 'Granulación Postoperatoria Temprana',
+      statusBadge: 'Evolución Favorable',
+      photosCount: 2,
+      photoLabels: ['Foto #1', 'Foto #2'],
+      medicalPlanHeader: 'ESTADO DE LA HERIDA (DÍA 14):',
+      medicalPlanSummary:
+        'Se observa tejido de granulación limpio en fase proliferativa acorde a su cirugía (Colecistectomía Laparoscópica).',
+      clinicalSuggestions:
+        'Realizar curación diaria con antiséptico de Clorhexidina 2% y proteger la incisión con apósito estéril impermeable.',
+      recommendedMedications: [
+        'Clorhexidina Solución 2% 120ml',
+        'Apósito Tegaderm Impermeable 3M',
+      ],
+      confidenceScore: 0.97,
+    });
+
+    this.reports.push(report1, report2, report3);
   }
 
   async findByPatientId(patientId) {

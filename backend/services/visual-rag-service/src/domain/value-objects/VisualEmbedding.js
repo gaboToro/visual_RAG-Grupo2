@@ -14,6 +14,23 @@ class VisualEmbedding {
     const photoSeed = photos.length > 0 ? String(photos[0]?.uri || photos[0] || '') : 'default';
 
     if (
+      notesLower.includes('fiebre') ||
+      notesLower.includes('pus') ||
+      notesLower.includes('secrecion') ||
+      notesLower.includes('secreción') ||
+      notesLower.includes('sangrado') ||
+      notesLower.includes('infeccion') ||
+      notesLower.includes('infección') ||
+      notesLower.includes('abierta') ||
+      notesLower.includes('dehiscencia') ||
+      notesLower.includes('mal olor') ||
+      notesLower.includes('purulent') ||
+      photoSeed.includes('infection')
+    ) {
+      return new VisualEmbedding([0.34, 0.29, 0.91, 0.87, 0.84, 0.24]);
+    }
+
+    if (
       notesLower.includes('roja') ||
       notesLower.includes('borde') ||
       notesLower.includes('engrosa') ||

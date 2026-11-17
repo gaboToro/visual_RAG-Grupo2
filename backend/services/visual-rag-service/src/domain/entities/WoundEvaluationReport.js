@@ -10,6 +10,8 @@ class WoundEvaluationReport {
     statusBadge = 'Evolución Favorable',
     photosCount = 2,
     photoLabels = ['Foto #1', 'Foto #2'],
+    photoUris = [],
+    patientNotes = '',
     medicalPlanHeader,
     medicalPlanSummary,
     clinicalSuggestions,
@@ -29,6 +31,8 @@ class WoundEvaluationReport {
     this.statusBadge = statusBadge;
     this.photosCount = Number(photosCount) || photoLabels.length || 1;
     this.photoLabels = photoLabels;
+    this.photoUris = Array.isArray(photoUris) ? [...photoUris] : [];
+    this.patientNotes = String(patientNotes || '').trim();
     this.medicalPlanHeader =
       medicalPlanHeader || `ESTADO DE LA HERIDA (DÍA ${this.postOpDay}):`;
     this.medicalPlanSummary = medicalPlanSummary;
@@ -49,6 +53,8 @@ class WoundEvaluationReport {
       statusBadge: this.statusBadge,
       photosCount: this.photosCount,
       photoLabels: this.photoLabels,
+      photoUris: this.photoUris,
+      patientNotes: this.patientNotes,
       medicalPlanHeader: this.medicalPlanHeader,
       medicalPlanSummary: this.medicalPlanSummary,
       clinicalSuggestions: this.clinicalSuggestions,

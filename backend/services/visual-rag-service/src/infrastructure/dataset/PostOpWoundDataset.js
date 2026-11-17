@@ -41,6 +41,23 @@ class PostOpWoundDataset {
           'Realizar curación diaria con antiséptico de Clorhexidina 2% y proteger la incisión con apósito estéril impermeable.',
         recommendedActiveIngredients: ['Clorhexidina Solución 2%', 'Apósito Tegaderm Impermeable 3M'],
       },
+      {
+        datasetId: 'ML-WND-004',
+        classification: 'Signos de Infección / Dehiscencia',
+        statusBadge: 'Requiere Atención Médica',
+        featureVector: [0.35, 0.30, 0.90, 0.88, 0.85, 0.25],
+        clinicalPattern:
+          'Eritema perilesional marcado, separación parcial de bordes o presencia de exudado compatible con proceso infeccioso.',
+        basePlanTemplate:
+          'Se identifican signos de alerta en la incisión quirúrgica que requieren valoración prioritaria por su médico cirujano.',
+        clinicalSuggestions:
+          'No automedicarse ni manipular los puntos. Realizar limpieza suave con solución antiséptica, cubrir con apósito estéril y contactar de inmediato a su cirujano si hay fiebre > 38°C.',
+        recommendedActiveIngredients: [
+          'Clorhexidina Solución 2% 120ml',
+          'Mupirocina Ungüento Tópico 2% 15g',
+          'Apósito Tegaderm Impermeable 3M',
+        ],
+      },
     ];
   }
 
