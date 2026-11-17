@@ -9,11 +9,21 @@ import {
   Linking,
 } from 'react-native';
 import { useApp } from '../../context/AppContext';
-import { SparklesAiIcon } from '../../components/icons/FigmaIcons';
+import { SparklesAiIcon, RefreshIcon } from '../../components/icons/FigmaIcons';
 
 export function PharmacyScreen(): React.JSX.Element {
-  const { pharmacyData, theme } = useApp();
+  const { pharmacyData, refreshMedicalOrders, theme } = useApp();
   const comparison = pharmacyData.priceComparison;
+
+  async function handleRefreshPharmacy(): Promise<void> {
+    const synced = await refreshMedicalOrders();
+    Alert.alert(
+      'Catálogo de Farmacia',
+      synced
+        ? 'Las ofertas y recomendaciones se han actualizado desde el microservicio de precios.'
+        : 'Mostrando las mejores ofertas verificadas para su tratamiento actual.'
+    );
+  }
 
   async function handleOrderOnline(
     medicationName: string,
@@ -50,12 +60,23 @@ export function PharmacyScreen(): React.JSX.Element {
       showsVerticalScrollIndicator={false}
     >
       { }
-      <Text style={[styles.screenTitle, { color: theme.textPrimary }]}>
-        Farmacia & Insumos
-      </Text>
-      <Text style={[styles.screenSubtitle, { color: theme.textSecondary }]}>
-        {pharmacyData.headerSubtitle}
-      </Text>
+      <View style={styles.topHeaderRow}>
+        <View style={styles.topHeaderTitles}>
+          <Text style={[styles.screenTitle, { color: theme.textPrimary }]}>
+            Farmacia & Insumos
+          </Text>
+          <Text style={[styles.screenSubtitle, { color: theme.textSecondary }]}>
+            {pharmacyData.headerSubtitle}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={[styles.refreshBtn, { backgroundColor: theme.primaryLight }]}
+          activeOpacity={0.75}
+          onPress={handleRefreshPharmacy}
+        >
+          <RefreshIcon />
+        </TouchableOpacity>
+      </View>
 
       { }
       <View
@@ -90,11 +111,20 @@ export function PharmacyScreen(): React.JSX.Element {
           },
         ]}
       >
-        <Text style={[styles.comparisonTitle, { color: theme.textPrimary }]}>
-          Comparativa de Precios
-        </Text>
+        <View style={styles.comparisonHeaderRow}>
+          <Text style={[styles.comparisonTitle, { color: theme.textPrimary }]}>
+            Comparativa de Precios
+          </Text>
+          {Boolean(pharmacyData.totalSavingsLabel) && (
+            <View style={[styles.totalSavingsPill, { backgroundColor: theme.emeraldLight }]}>
+              <Text style={[styles.totalSavingsPillText, { color: theme.emerald }]}>
+                {pharmacyData.totalSavingsLabel}
+              </Text>
+            </View>
+          )}
+        </View>
         <Text style={[styles.savingsSubtitle, { color: theme.emerald }]}>
-          {comparison.savingsLabel}
+          {comparison.savingsLabel} ({comparison.medicationName})
         </Text>
 
         <View style={styles.offersRow}>
@@ -163,8 +193,16 @@ export function PharmacyScreen(): React.JSX.Element {
               <Text style={[styles.medName, { color: theme.textPrimary }]}>
                 {item.name}
               </Text>
+              {Boolean(item.category) && (
+                <Text style={[styles.medCategory, { color: theme.primary }]}>
+                  {item.category}
+                </Text>
+              )}
               <Text style={[styles.medSubtitle, { color: theme.textSecondary }]}>
                 {item.subtitle}
+                {item.alternativePharmacyName && item.alternativeFormattedPrice
+                  ? ` • En ${item.alternativePharmacyName}: ${item.alternativeFormattedPrice}`
+                  : ''}
               </Text>
             </View>
           </View>
@@ -204,6 +242,23 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 28,
   },
+  topHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  topHeaderTitles: {
+    flex: 1,
+    marginRight: 10,
+  },
+  refreshBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   screenTitle: {
     fontSize: 18,
     fontWeight: '700',
@@ -212,7 +267,6 @@ const styles = StyleSheet.create({
   screenSubtitle: {
     fontSize: 12,
     fontWeight: '500',
-    marginBottom: 14,
   },
   aiTipCard: {
     borderWidth: 1,
@@ -249,10 +303,26 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
+  comparisonHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 4,
+  },
   comparisonTitle: {
     fontSize: 14,
     fontWeight: '700',
-    marginBottom: 4,
+  },
+  totalSavingsPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  totalSavingsPillText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
   savingsSubtitle: {
     fontSize: 11,
@@ -319,7 +389,12 @@ const styles = StyleSheet.create({
   medName: {
     fontSize: 14,
     fontWeight: '700',
-    marginBottom: 3,
+    marginBottom: 2,
+  },
+  medCategory: {
+    fontSize: 10,
+    fontWeight: '700',
+    marginBottom: 2,
   },
   medSubtitle: {
     fontSize: 11,
