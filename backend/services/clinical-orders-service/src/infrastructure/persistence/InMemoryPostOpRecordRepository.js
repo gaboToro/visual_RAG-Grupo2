@@ -69,9 +69,17 @@ class InMemoryPostOpRecordRepository extends IPostOpRecordRepository {
     return this.recordsByPatient.get(patientId) || null;
   }
 
+  async findAll() {
+    return Array.from(this.recordsByPatient.values());
+  }
+
   async save(record) {
     this.recordsByPatient.set(record.patientId, record);
     return record;
+  }
+
+  async deleteByPatientId(patientId) {
+    return this.recordsByPatient.delete(patientId);
   }
 }
 

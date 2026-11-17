@@ -10,6 +10,11 @@ class ClinicalOrdersController {
 
     try {
 
+      if (method === 'GET' && pathname === '/orders') {
+        const records = await this.useCases.listAllPostOpRecords();
+        return this.sendJson(res, 200, { records });
+      }
+
       const getMatch = pathname.match(/^\/orders\/([^/]+)$/);
       if (method === 'GET' && getMatch) {
         const patientId = getMatch[1];
@@ -21,6 +26,12 @@ class ClinicalOrdersController {
         const patientId = getMatch[1];
         const updatedRecord = await this.useCases.savePatientPostOpRecord(patientId, parsedBody);
         return this.sendJson(res, 200, { record: updatedRecord });
+      }
+
+      if (method === 'DELETE' && getMatch) {
+        const patientId = getMatch[1];
+        const result = await this.useCases.deletePatientPostOpRecord(patientId);
+        return this.sendJson(res, 200, result);
       }
 
       if (method === 'GET' && pathname === '/health') {

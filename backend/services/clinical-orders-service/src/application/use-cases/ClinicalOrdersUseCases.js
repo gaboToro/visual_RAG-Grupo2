@@ -57,6 +57,16 @@ class ClinicalOrdersUseCases {
     await this.recordRepository.save(record);
     return record.toDTO();
   }
+
+  async listAllPostOpRecords() {
+    const records = await this.recordRepository.findAll();
+    return records.map((r) => r.toDTO());
+  }
+
+  async deletePatientPostOpRecord(patientId) {
+    const deleted = await this.recordRepository.deleteByPatientId(patientId);
+    return { success: deleted, patientId };
+  }
 }
 
 module.exports = { ClinicalOrdersUseCases };
