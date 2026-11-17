@@ -14,10 +14,13 @@ class User {
     if (!id || !fullName || !email || !role) {
       throw new Error('Invariante de dominio violada: id, fullName, email y role son obligatorios.');
     }
+    if (!['PATIENT', 'DOCTOR'].includes(role)) {
+      throw new Error('Invariante de dominio violada: el rol debe ser PATIENT o DOCTOR.');
+    }
 
     this.id = id;
-    this.fullName = fullName;
-    this.email = email.toLowerCase().trim();
+    this.fullName = String(fullName).trim();
+    this.email = String(email).toLowerCase().trim();
     this.password = password;
     this.role = role;
     this.assignedDoctorId = assignedDoctorId;
@@ -26,12 +29,12 @@ class User {
   }
 
   verifyCredentials(plainPassword, expectedRole) {
-    const passwordMatches = this.password === plainPassword;
+    const passwordMatches = Boolean(plainPassword) && this.password === plainPassword;
     const roleMatches = !expectedRole || this.role === expectedRole;
     return passwordMatches && roleMatches;
   }
 
-  updatePatientClinicalData({ fullName, emergencyContact, bloodType }) {
+  updatePatientClinicalData({ fullName, emergencyContact, bloodType, currentPostOpDay }) {
     if (this.role !== 'PATIENT') {
       throw new Error('Solo un usuario con rol PATIENT puede actualizar datos clínicos de paciente.');
     }
@@ -41,16 +44,21 @@ class User {
     this.clinicalInfo = this.clinicalInfo.withUpdates({
       emergencyContact,
       bloodType,
+      currentPostOpDay,
     });
   }
 
-  updateDoctorProfessionalData({ specialty, hospital }) {
+  updateDoctorProfessionalData({ fullName, specialty, hospital, medicalLicense }) {
     if (this.role !== 'DOCTOR') {
       throw new Error('Solo un usuario con rol DOCTOR puede actualizar datos profesionales.');
+    }
+    if (fullName && fullName.trim().length > 0) {
+      this.fullName = fullName.trim();
     }
     this.clinicalInfo = this.clinicalInfo.withUpdates({
       specialty,
       hospital,
+      medicalLicense,
     });
   }
 

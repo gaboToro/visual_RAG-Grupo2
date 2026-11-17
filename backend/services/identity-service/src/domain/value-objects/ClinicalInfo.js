@@ -1,3 +1,5 @@
+const VALID_BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+
 class ClinicalInfo {
 
   constructor({
@@ -9,17 +11,18 @@ class ClinicalInfo {
     specialty = '',
     hospital = '',
   } = {}) {
-    this.cedula = cedula;
-    this.bloodType = bloodType;
-    this.emergencyContact = emergencyContact;
-    this.currentPostOpDay = currentPostOpDay;
-    this.medicalLicense = medicalLicense;
-    this.specialty = specialty;
-    this.hospital = hospital;
+    const normalizedBlood = String(bloodType || 'O+').toUpperCase().trim();
+    this.cedula = String(cedula || '').trim();
+    this.bloodType = VALID_BLOOD_TYPES.includes(normalizedBlood) ? normalizedBlood : 'O+';
+    this.emergencyContact = String(emergencyContact || '').trim();
+    this.currentPostOpDay = Math.max(1, Number(currentPostOpDay) || 1);
+    this.medicalLicense = String(medicalLicense || '').trim();
+    this.specialty = String(specialty || '').trim();
+    this.hospital = String(hospital || '').trim();
     Object.freeze(this);
   }
 
-  withUpdates(updates) {
+  withUpdates(updates = {}) {
     return new ClinicalInfo({
       cedula: updates.cedula !== undefined ? updates.cedula : this.cedula,
       bloodType: updates.bloodType !== undefined ? updates.bloodType : this.bloodType,
@@ -35,4 +38,4 @@ class ClinicalInfo {
   }
 }
 
-module.exports = { ClinicalInfo };
+module.exports = { ClinicalInfo, VALID_BLOOD_TYPES };
