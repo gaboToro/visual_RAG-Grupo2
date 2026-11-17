@@ -26,6 +26,12 @@ class PharmacyPricingController {
         return this.sendJson(res, 200, data);
       }
 
+      if (method === 'GET' && pathname === '/catalog') {
+        const q = urlObj.searchParams.get('q') || '';
+        const items = await this.useCases.getFullCatalog(q);
+        return this.sendJson(res, 200, { items });
+      }
+
       if (method === 'GET' && pathname === '/health') {
         return this.sendJson(res, 200, {
           service: 'pharmacy-pricing-service',

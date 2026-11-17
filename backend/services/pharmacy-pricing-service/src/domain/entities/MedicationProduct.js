@@ -24,8 +24,15 @@ class MedicationProduct {
     };
   }
 
+  getSavingsAmount() {
+    const { lowest, second } = this.getTopTwoOffersByPrice();
+    return Number(Math.max(0, second.price - lowest.price).toFixed(2));
+  }
+
   toRecommendedItemDTO() {
     const offer = this.getRecommendedOffer();
+    const { lowest, second } = this.getTopTwoOffersByPrice();
+    const alternative = offer.pharmacyName === lowest.pharmacyName ? second : lowest;
     return {
       id: this.id,
       name: this.name,
@@ -35,6 +42,9 @@ class MedicationProduct {
       subtitle: `${offer.pharmacyName} • ${offer.deliveryInfo}`,
       price: offer.price,
       formattedPrice: `$${offer.price.toFixed(2)}`,
+      savingsAmount: this.getSavingsAmount(),
+      alternativePharmacyName: alternative.pharmacyName,
+      alternativeFormattedPrice: `$${alternative.price.toFixed(2)}`,
       orderUrl: offer.orderUrl,
       allOffers: this.pharmacyOffers,
     };

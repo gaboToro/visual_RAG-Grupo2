@@ -35,16 +35,28 @@ class BestPriceRecommenderService {
       alternativeOffer: second,
     });
 
+    const recommendedItems = matchedProducts.map((p) => p.toRecommendedItemDTO());
+    const totalSavingsAmount = Number(
+      matchedProducts.reduce((acc, p) => acc + p.getSavingsAmount(), 0).toFixed(2)
+    );
+
+    const isAlertCase = woundClassification.toLowerCase().includes('infecc');
+    const summaryText = isAlertCase
+      ? `ESTADO DE LA HERIDA (DÍA ${postOpDay}): Se detectaron signos de alerta (${woundClassification}). Adquiera los insumos antisépticos y consulte a su cirujano.`
+      : `ESTADO DE LA HERIDA (DÍA ${postOpDay}): La evolución es favorable (${woundClassification}). Mantenga la limpieza antiséptica y el recubrimiento impermeable prescrito por su médico.`;
+
     return {
       postOpDay,
       woundClassification,
       headerSubtitle: `Día ${postOpDay} de reposo • ${woundClassification}`,
       aiRecoveryTip: {
         title: 'Consejo de Recuperación IA',
-        summary: `ESTADO DE LA HERIDA (DÍA ${postOpDay}): La evolución es favorable (${woundClassification}). Mantenga la limpieza antiséptica y el recubrimiento impermeable prescrito por su médico.`,
+        summary: summaryText,
       },
       priceComparison: priceComparison.toDTO(),
-      recommendedItems: matchedProducts.map((p) => p.toRecommendedItemDTO()),
+      totalSavingsAmount,
+      totalSavingsLabel: `Ahorro total estimado: $${totalSavingsAmount.toFixed(2)}`,
+      recommendedItems,
     };
   }
 }
