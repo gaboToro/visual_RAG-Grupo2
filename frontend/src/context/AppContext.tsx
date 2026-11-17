@@ -11,6 +11,7 @@ import {
 import { ThemePalette, getThemePalette } from '../theme/colors';
 import {
   loginViaGateway,
+  setSessionAuthToken,
   fetchPatientsViaGateway,
   assignPatientViaGateway,
   removePatientViaGateway,
@@ -22,6 +23,30 @@ import {
   fetchSavedReportsViaGateway,
   fetchPharmacyRecommendationsViaGateway,
 } from '../services/apiClient';
+
+const MONTHS_ES = [
+  'ene',
+  'feb',
+  'mar',
+  'abr',
+  'may',
+  'jun',
+  'jul',
+  'ago',
+  'sep',
+  'oct',
+  'nov',
+  'dic',
+];
+
+function formatLocalSpanishDate(date = new Date()): string {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = MONTHS_ES[date.getMonth()] || 'nov';
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${day} ${month} ${year} (${hours}:${minutes})`;
+}
 
 const INITIAL_PATIENTS: UserProfile[] = [
   {
@@ -168,6 +193,28 @@ const INITIAL_REPORTS: WoundReportDTO[] = [
     confidenceScore: 0.96,
     verifiedSignature: 'Documento Clínico Digital Verificado • Visual RAG',
   },
+  {
+    folio: 'REP-309412',
+    patientId: 'pat-2',
+    patientName: 'María Elena Quispe',
+    postOpDay: 14,
+    formattedDate: '14 nov 2026 (10:15)',
+    diagnosisTitle: 'Granulación Postoperatoria Temprana',
+    statusBadge: 'Evolución Favorable',
+    photosCount: 2,
+    photoLabels: ['Foto #1', 'Foto #2'],
+    medicalPlanHeader: 'ESTADO DE LA HERIDA (DÍA 14):',
+    medicalPlanSummary:
+      'Se observa tejido de granulación limpio en fase proliferativa acorde a su cirugía (Colecistectomía Laparoscópica).',
+    clinicalSuggestions:
+      'Realizar curación diaria con antiséptico de Clorhexidina 2% y proteger la incisión con apósito estéril impermeable.',
+    recommendedMedications: [
+      'Clorhexidina Solución 2% 120ml',
+      'Apósito Tegaderm Impermeable 3M',
+    ],
+    confidenceScore: 0.97,
+    verifiedSignature: 'Documento Clínico Digital Verificado • Visual RAG',
+  },
 ];
 
 const INITIAL_PHARMACY: PharmacyRecommendationDTO = {
@@ -200,6 +247,8 @@ const INITIAL_PHARMACY: PharmacyRecommendationDTO = {
       orderUrl: 'https://www.fybeca.com',
     },
   },
+  totalSavingsAmount: 1.3,
+  totalSavingsLabel: 'Ahorro total estimado: $1.30',
   recommendedItems: [
     {
       id: 'med-1',
@@ -210,6 +259,9 @@ const INITIAL_PHARMACY: PharmacyRecommendationDTO = {
       subtitle: 'Cruz Azul • Entrega Inmediata',
       price: 3.2,
       formattedPrice: '$3.20',
+      savingsAmount: 0.95,
+      alternativePharmacyName: 'Fybeca',
+      alternativeFormattedPrice: '$4.15',
       orderUrl: 'https://farmaciascruzazul.ec',
     },
     {
@@ -221,6 +273,9 @@ const INITIAL_PHARMACY: PharmacyRecommendationDTO = {
       subtitle: 'Fybeca • Entrega en 30 min',
       price: 4.5,
       formattedPrice: '$4.50',
+      savingsAmount: 0.35,
+      alternativePharmacyName: 'Cruz Azul',
+      alternativeFormattedPrice: '$4.85',
       orderUrl: 'https://www.fybeca.com',
     },
   ],
@@ -256,8 +311,16 @@ interface AppContextValue {
   evaluateCapturedWoundPhotos: () => Promise<WoundReportDTO>;
   refreshSavedReports: () => Promise<boolean>;
   refreshMedicalOrders: () => Promise<boolean>;
-  updatePatientClinicalInfo: (fullName: string, emergencyContact: string) => Promise<void>;
-  updateDoctorProfessionalInfo: (specialty: string, hospital: string) => Promise<void>;
+  updatePatientClinicalInfo: (
+    fullName: string,
+    emergencyContact: string,
+    bloodType?: string
+  ) => Promise<void>;
+  updateDoctorProfessionalInfo: (
+    specialty: string,
+    hospital: string,
+    medicalLicense?: string
+  ) => Promise<void>;
   assignNewPatientToDoctor: (
     fullName: string,
     email: string,
@@ -271,6 +334,7 @@ interface AppContextValue {
       procedureName: string;
       surgeryDate: string;
       totalRestDays: number;
+      currentDay?: number;
       prohibitedActions: string[];
       allowedCares: string[];
       allergiesAndAlerts: string[];
@@ -359,8 +423,11 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
   }
 
   function logout(): void {
+    setSessionAuthToken(null);
     setCurrentUser(null);
     setSelectedReportForModal(null);
+    setCapturedPhotos([]);
+    setPatientNotes('');
   }
 
   function toggleDarkMode(): void {
@@ -418,12 +485,30 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
       // Fallback local con evaluación dinámica según notas y día postoperatorio
       const notesLower = patientNotes.toLowerCase();
       let diagnosisTitle = 'Cicatrización Normal';
+      let statusBadge = 'Evolución Favorable';
       let confidenceScore = 0.99;
       let clinicalSuggestions =
         'Mantener el área seca. Limpieza con solución salina al 0.9% y apósito Tegaderm permeable al vapor. No frotar la costra.';
       let baseSummary = `La cicatrización de su herida quirúrgica (${currentRecord.schedule.procedureName}) evoluciona favorablemente con cierre epitelial limpio.`;
 
       if (
+        notesLower.includes('fiebre') ||
+        notesLower.includes('pus') ||
+        notesLower.includes('secrecion') ||
+        notesLower.includes('secreción') ||
+        notesLower.includes('sangrado') ||
+        notesLower.includes('infeccion') ||
+        notesLower.includes('infección') ||
+        notesLower.includes('abierta') ||
+        notesLower.includes('dehiscencia')
+      ) {
+        diagnosisTitle = 'Signos de Infección / Dehiscencia';
+        statusBadge = 'Requiere Atención Médica';
+        confidenceScore = 0.96;
+        baseSummary = `Se identifican signos de alerta en la herida de ${currentRecord.schedule.procedureName} que requieren valoración prioritaria por su cirujano.`;
+        clinicalSuggestions =
+          'No automedicarse ni manipular los puntos. Realizar limpieza suave con antiséptico, cubrir con apósito estéril y contactar de inmediato a su cirujano.';
+      } else if (
         notesLower.includes('roja') ||
         notesLower.includes('borde') ||
         notesLower.includes('engrosa') ||
@@ -450,21 +535,19 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
           'Realizar curación diaria con antiséptico de Clorhexidina 2% y proteger la incisión con apósito estéril impermeable.';
       }
 
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
       const folio = `REP-${Math.floor(100000 + Math.random() * 900000)}`;
       const localReport: WoundReportDTO = {
         folio,
         patientId,
         patientName,
         postOpDay,
-        formattedDate: `05 nov 2026 (${hours}:${minutes})`,
+        formattedDate: formatLocalSpanishDate(new Date()),
         diagnosisTitle,
-        statusBadge: 'Evolución Favorable',
+        statusBadge,
         photosCount: photosToSend.length,
         photoLabels: photosToSend.map((_, idx) => `Foto #${idx + 1}`),
         photoUris: capturedPhotos,
+        patientNotes,
         medicalPlanHeader: `ESTADO DE LA HERIDA (DÍA ${postOpDay}):`,
         medicalPlanSummary: baseSummary,
         clinicalSuggestions,
@@ -526,17 +609,20 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function updatePatientClinicalInfo(
     fullName: string,
-    emergencyContact: string
+    emergencyContact: string,
+    bloodType?: string
   ): Promise<void> {
     if (!currentUser) return;
     const cleanName = fullName.trim() || currentUser.fullName;
     const cleanEmergency =
       emergencyContact.trim() || currentUser.clinicalInfo.emergencyContact || '';
+    const cleanBlood =
+      (bloodType && bloodType.trim()) || currentUser.clinicalInfo.bloodType || 'O+';
 
     const remoteUpdated = await updatePatientProfileViaGateway(currentUser.id, {
       fullName: cleanName,
       emergencyContact: cleanEmergency,
-      bloodType: currentUser.clinicalInfo.bloodType,
+      bloodType: cleanBlood,
     });
 
     const updated: UserProfile = remoteUpdated || {
@@ -545,6 +631,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
       clinicalInfo: {
         ...currentUser.clinicalInfo,
         emergencyContact: cleanEmergency,
+        bloodType: cleanBlood,
       },
     };
     setCurrentUser(updated);
@@ -553,14 +640,20 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function updateDoctorProfessionalInfo(
     specialty: string,
-    hospital: string
+    hospital: string,
+    medicalLicense?: string
   ): Promise<void> {
     const cleanSpecialty = specialty.trim() || doctorProfile.clinicalInfo.specialty || '';
     const cleanHospital = hospital.trim() || doctorProfile.clinicalInfo.hospital || '';
+    const cleanLicense =
+      (medicalLicense && medicalLicense.trim()) ||
+      doctorProfile.clinicalInfo.medicalLicense ||
+      'MSP-178942';
 
     const remoteUpdated = await updateDoctorProfileViaGateway(doctorProfile.id, {
       specialty: cleanSpecialty,
       hospital: cleanHospital,
+      medicalLicense: cleanLicense,
     });
 
     const updated: UserProfile = remoteUpdated || {
@@ -569,6 +662,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         ...doctorProfile.clinicalInfo,
         specialty: cleanSpecialty,
         hospital: cleanHospital,
+        medicalLicense: cleanLicense,
       },
     };
     setDoctorProfile(updated);
@@ -653,6 +747,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
       procedureName: string;
       surgeryDate: string;
       totalRestDays: number;
+      currentDay?: number;
       prohibitedActions: string[];
       allowedCares: string[];
       allergiesAndAlerts: string[];
@@ -660,8 +755,11 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     }
   ): Promise<void> {
     const existing = postOpRecords[patientId] || postOpRecords['pat-1'];
-    const currentDay = existing.schedule.currentDay;
-    const totalRestDays = Number(updates.totalRestDays) || 10;
+    const currentDay = Math.max(
+      1,
+      Number(updates.currentDay !== undefined ? updates.currentDay : existing.schedule.currentDay) || 1
+    );
+    const totalRestDays = Math.max(1, Number(updates.totalRestDays) || 10);
     const remainingDays = Math.max(0, totalRestDays - currentDay);
     const completionPercentage = Math.min(
       100,
@@ -702,6 +800,11 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     }
   }
 
+  const visibleReports =
+    currentUser?.role === 'PATIENT'
+      ? savedReports.filter((r) => !r.patientId || r.patientId === currentUser.id)
+      : savedReports;
+
   return (
     <AppContext.Provider
       value={{
@@ -712,7 +815,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         doctorProfile,
         selectedDoctorPatientId,
         postOpRecords,
-        savedReports,
+        savedReports: visibleReports,
         selectedReportForModal,
         pharmacyData,
         capturedPhotos,
