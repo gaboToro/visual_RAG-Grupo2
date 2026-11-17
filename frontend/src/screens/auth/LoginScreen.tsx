@@ -68,10 +68,13 @@ export function LoginScreen(): React.JSX.Element {
   const [selectedRole, setSelectedRole] = useState<UserRole>('PATIENT');
   const [email, setEmail] = useState<string>('nelsoncasa@gmail.com');
   const [password, setPassword] = useState<string>('nelson123');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   function handleSelectRole(role: UserRole): void {
     setSelectedRole(role);
+    setLoginError(null);
     if (role === 'PATIENT') {
       setEmail('nelsoncasa@gmail.com');
       setPassword('nelson123');
@@ -82,22 +85,33 @@ export function LoginScreen(): React.JSX.Element {
   }
 
   async function handleLoginSubmit(): Promise<void> {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert(
-        'Campos incompletos',
-        'Por favor ingresa tu correo electrónico y contraseña.'
-      );
+    const cleanEmail = email.trim();
+    const cleanPass = password.trim();
+    setLoginError(null);
+
+    if (!cleanEmail || !cleanPass) {
+      const msg = 'Por favor ingresa tu correo electrónico y contraseña.';
+      setLoginError(msg);
+      Alert.alert('Campos incompletos', msg);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      const msg = 'Por favor ingresa un formato de correo electrónico válido.';
+      setLoginError(msg);
+      Alert.alert('Correo inválido', msg);
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const ok = await login(email, password, selectedRole);
+      const ok = await login(cleanEmail, password, selectedRole);
       if (!ok) {
-        Alert.alert(
-          'Credenciales Inválidas',
-          'El correo o contraseña no corresponden al rol seleccionado. Verifica las credenciales e inténtalo nuevamente.'
-        );
+        const msg =
+          'El correo o contraseña no corresponden al rol seleccionado. Verifica las credenciales e inténtalo nuevamente.';
+        setLoginError(msg);
+        Alert.alert('Credenciales Inválidas', msg);
       }
     } finally {
       setIsSubmitting(false);
@@ -229,7 +243,7 @@ export function LoginScreen(): React.JSX.Element {
           </Text>
           <View
             style={[
-              styles.inputWrapper,
+              styles.inputWrapperRow,
               {
                 backgroundColor: theme.background,
                 borderColor: theme.border,
@@ -238,16 +252,46 @@ export function LoginScreen(): React.JSX.Element {
           >
             <TextInput
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(val) => {
+                setPassword(val);
+                if (loginError) setLoginError(null);
+              }}
               placeholder="••••••••••••"
               placeholderTextColor={theme.textSecondary}
-              secureTextEntry
-              style={[styles.textInput, { color: theme.textPrimary }]}
+              secureTextEntry={!showPassword}
+              style={[styles.textInputFlex, { color: theme.textPrimary }]}
             />
+            <TouchableOpacity
+              onPress={() => setShowPassword((prev) => !prev)}
+              activeOpacity={0.75}
+              style={styles.togglePassBtn}
+            >
+              <Text style={[styles.togglePassText, { color: theme.primary }]}>
+                {showPassword ? 'Ocultar' : 'Ver'}
+              </Text>
+            </TouchableOpacity>
           </View>
 
+          {loginError && (
+            <View
+              style={[
+                styles.errorBanner,
+                {
+                  backgroundColor: theme.dangerLight,
+                  borderColor: theme.dangerBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.errorBannerText, { color: theme.danger }]}>
+                {loginError}
+              </Text>
+            </View>
+          )}
+
           { }
-          <View
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => handleSelectRole(selectedRole)}
             style={[
               styles.demoBox,
               {
@@ -258,15 +302,15 @@ export function LoginScreen(): React.JSX.Element {
           >
             <Text style={[styles.demoBoxTitle, { color: theme.primary }]}>
               {selectedRole === 'PATIENT'
-                ? 'Cuenta Paciente Demo:'
-                : 'Cuenta Médico Demo:'}
+                ? 'Cuenta Paciente Demo (toca para autocompletar):'
+                : 'Cuenta Médico Demo (toca para autocompletar):'}
             </Text>
             <Text style={[styles.demoBoxCredentials, { color: theme.textPrimary }]}>
               {selectedRole === 'PATIENT'
                 ? 'nelsoncasa@gmail.com / nelson123'
                 : 'nelson.doctor@gmail.com / doctor123'}
             </Text>
-          </View>
+          </TouchableOpacity>
 
           { }
           <TouchableOpacity
@@ -376,9 +420,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 16,
   },
+  inputWrapperRow: {
+    height: 48,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
   textInput: {
     fontSize: 14,
     fontWeight: '500',
+  },
+  textInputFlex: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  togglePassBtn: {
+    paddingLeft: 10,
+    paddingVertical: 4,
+  },
+  togglePassText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  errorBanner: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 12,
+  },
+  errorBannerText: {
+    fontSize: 11,
+    fontWeight: '600',
+    lineHeight: 16,
   },
   demoBox: {
     height: 56,
