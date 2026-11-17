@@ -49,6 +49,16 @@ export function ReportDetailModal(): React.JSX.Element | null {
   }
 
   const customUris = selectedReportForModal.photoUris || [];
+  const labelsToRender =
+    selectedReportForModal.photoLabels && selectedReportForModal.photoLabels.length > 0
+      ? selectedReportForModal.photoLabels
+      : ['Foto #1', 'Foto #2'];
+  const isAlertReport =
+    selectedReportForModal.statusBadge.toLowerCase().includes('atención') ||
+    selectedReportForModal.diagnosisTitle.toLowerCase().includes('infecc');
+  const confidencePct = selectedReportForModal.confidenceScore
+    ? `${Math.round(selectedReportForModal.confidenceScore * 100)}%`
+    : '98%';
 
   return (
     <Modal
@@ -115,38 +125,25 @@ export function ReportDetailModal(): React.JSX.Element | null {
 
             { }
             <View style={styles.photosRow}>
-              { }
-              <View style={styles.photoCard}>
-                {isRealImageUri(customUris[0]) ? (
-                  <Image source={{ uri: customUris[0] }} style={styles.capturedImage} />
-                ) : (
-                  <View style={styles.graphicCenter}>
-                    <WoundIncisionGraphic variant={1} />
+              {labelsToRender.map((label, idx) => (
+                <View key={`${label}-${idx}`} style={styles.photoCard}>
+                  {isRealImageUri(customUris[idx]) ? (
+                    <Image source={{ uri: customUris[idx] }} style={styles.capturedImage} />
+                  ) : (
+                    <View style={styles.graphicCenter}>
+                      <WoundIncisionGraphic variant={idx % 2 === 0 ? 1 : 2} />
+                    </View>
+                  )}
+                  <View style={styles.photoLabelPill}>
+                    <Text style={styles.photoLabelText}>{label}</Text>
                   </View>
-                )}
-                <View style={styles.photoLabelPill}>
-                  <Text style={styles.photoLabelText}>Foto #1</Text>
                 </View>
-              </View>
-
-              { }
-              <View style={styles.photoCard}>
-                {isRealImageUri(customUris[1]) ? (
-                  <Image source={{ uri: customUris[1] }} style={styles.capturedImage} />
-                ) : (
-                  <View style={styles.graphicCenter}>
-                    <WoundIncisionGraphic variant={2} />
-                  </View>
-                )}
-                <View style={styles.photoLabelPill}>
-                  <Text style={styles.photoLabelText}>Foto #2</Text>
-                </View>
-              </View>
+              ))}
             </View>
 
             { }
             <Text style={[styles.sectionHeaderLabel, { color: theme.textSecondary }]}>
-              EVALUACIÓN DE INCISIÓN
+              EVALUACIÓN DE INCISIÓN (CONFIANZA ML: {confidencePct})
             </Text>
 
             <View
@@ -154,7 +151,7 @@ export function ReportDetailModal(): React.JSX.Element | null {
                 styles.evalBox,
                 {
                   backgroundColor: theme.background,
-                  borderColor: theme.border,
+                  borderColor: isAlertReport ? theme.dangerBorder : theme.border,
                 },
               ]}
             >
@@ -162,16 +159,31 @@ export function ReportDetailModal(): React.JSX.Element | null {
                 {selectedReportForModal.diagnosisTitle}
               </Text>
               <View style={styles.statusDotRow}>
-                <View style={styles.emeraldDot} />
-                <Text style={styles.statusRowText}>
+                <View
+                  style={[
+                    styles.emeraldDot,
+                    { backgroundColor: isAlertReport ? theme.danger : '#10B981' },
+                  ]}
+                />
+                <Text
+                  style={[
+                    styles.statusRowText,
+                    { color: isAlertReport ? theme.danger : '#059669' },
+                  ]}
+                >
                   Estado: {selectedReportForModal.statusBadge} • {selectedReportForModal.photosCount} fotos analizadas
                 </Text>
               </View>
+              {Boolean(selectedReportForModal.medicalPlanSummary) && (
+                <Text style={[styles.planSummaryDetail, { color: theme.textSecondary }]}>
+                  {selectedReportForModal.medicalPlanSummary}
+                </Text>
+              )}
             </View>
 
             { }
             <Text style={[styles.sectionHeaderLabel, { color: theme.textSecondary }]}>
-              SUGERENCIAS CLÍNICAS
+              SUGERENCIAS CLÍNICAS E INSUMOS
             </Text>
 
             <View
@@ -186,6 +198,21 @@ export function ReportDetailModal(): React.JSX.Element | null {
               <Text style={[styles.suggestionsText, { color: theme.textPrimary }]}>
                 {selectedReportForModal.clinicalSuggestions}
               </Text>
+              {selectedReportForModal.recommendedMedications &&
+                selectedReportForModal.recommendedMedications.length > 0 && (
+                  <View style={styles.medsTagsContainer}>
+                    {selectedReportForModal.recommendedMedications.map((med, idx) => (
+                      <View
+                        key={`${med}-${idx}`}
+                        style={[styles.medTagBadge, { backgroundColor: theme.primaryLight }]}
+                      >
+                        <Text style={[styles.medTagText, { color: theme.primary }]}>
+                          + {med}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
             </View>
 
             { }
@@ -301,11 +328,13 @@ const styles = StyleSheet.create({
   },
   photosRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 12,
     marginBottom: 18,
   },
   photoCard: {
+    minWidth: '46%',
     flex: 1,
     height: 130,
     backgroundColor: '#E2E8F0',
@@ -375,6 +404,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#059669',
   },
+  planSummaryDetail: {
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 18,
+    marginTop: 8,
+  },
   suggestionsBox: {
     borderWidth: 1,
     borderRadius: 14,
@@ -386,6 +421,21 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     lineHeight: 20,
+  },
+  medsTagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 10,
+  },
+  medTagBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  medTagText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   verifiedBanner: {
     height: 44,

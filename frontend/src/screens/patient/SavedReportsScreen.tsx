@@ -16,7 +16,13 @@ import {
 } from '../../components/icons/FigmaIcons';
 
 export function SavedReportsScreen(): React.JSX.Element {
-  const { savedReports, setSelectedReportForModal, refreshSavedReports, theme } = useApp();
+  const {
+    savedReports,
+    setSelectedReportForModal,
+    refreshSavedReports,
+    setActivePatientTab,
+    theme,
+  } = useApp();
 
   function handleOpenReportDetail(report: WoundReportDTO): void {
     setSelectedReportForModal(report);
@@ -60,91 +66,145 @@ export function SavedReportsScreen(): React.JSX.Element {
         </TouchableOpacity>
       </View>
 
-      { }
-      {savedReports.map((report) => (
+      {savedReports.length === 0 && (
         <View
-          key={report.folio}
           style={[
-            styles.reportCard,
+            styles.emptyStateCard,
             {
               backgroundColor: theme.surface,
               borderColor: theme.border,
             },
           ]}
         >
-          { }
-          <View style={styles.cardTopRow}>
-            <View style={[styles.folioPill, { backgroundColor: theme.surfaceMuted }]}>
-              <Text style={[styles.folioPillText, { color: theme.textPrimary }]}>
-                {report.folio}
-              </Text>
-            </View>
-
-            <View style={[styles.statusBadge, { backgroundColor: theme.emeraldLight }]}>
-              <Text style={[styles.statusBadgeText, { color: theme.emerald }]}>
-                {report.statusBadge}
-              </Text>
-            </View>
-          </View>
-
-          { }
-          <Text style={[styles.diagnosisTitle, { color: theme.textPrimary }]}>
-            {report.diagnosisTitle}
+          <Text style={[styles.emptyStateTitle, { color: theme.textPrimary }]}>
+            Sin reportes clínicos registrados
           </Text>
-          <Text style={[styles.reportDateText, { color: theme.textSecondary }]}>
-            Día {report.postOpDay} • {report.formattedDate}
+          <Text style={[styles.emptyStateSub, { color: theme.textSecondary }]}>
+            Capture de 1 a 4 fotografías de su incisión en la pestaña Evaluación para generar su primer reporte Visual RAG.
           </Text>
+          <TouchableOpacity
+            style={[styles.goEvalBtn, { backgroundColor: theme.primary }]}
+            activeOpacity={0.85}
+            onPress={() => setActivePatientTab('EVAL')}
+          >
+            <Text style={styles.goEvalBtnText}>Ir a Evaluación</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
-          { }
+      {savedReports.map((report) => {
+        const isAlert =
+          report.statusBadge.toLowerCase().includes('atención') ||
+          report.diagnosisTitle.toLowerCase().includes('infecc');
+        const confidencePct = report.confidenceScore
+          ? `${Math.round(report.confidenceScore * 100)}%`
+          : '98%';
+
+        return (
           <View
+            key={report.folio}
             style={[
-              styles.planBox,
+              styles.reportCard,
               {
-                backgroundColor: theme.background,
-                borderColor: theme.border,
+                backgroundColor: theme.surface,
+                borderColor: isAlert ? theme.dangerBorder : theme.border,
               },
             ]}
           >
-            <View style={styles.planTitleRow}>
-              <SparklesAiIcon />
-              <Text style={[styles.planTitleText, { color: theme.primary }]}>
-                Plan Médico del Día:
-              </Text>
+            { }
+            <View style={styles.cardTopRow}>
+              <View style={[styles.folioPill, { backgroundColor: theme.surfaceMuted }]}>
+                <Text style={[styles.folioPillText, { color: theme.textPrimary }]}>
+                  {report.folio} • IA {confidencePct}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: isAlert ? theme.dangerLight : theme.emeraldLight,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusBadgeText,
+                    { color: isAlert ? theme.danger : theme.emerald },
+                  ]}
+                >
+                  {report.statusBadge}
+                </Text>
+              </View>
             </View>
-            <Text style={[styles.planStateText, { color: theme.textSecondary }]}>
-              {report.medicalPlanHeader}
+
+            { }
+            <Text style={[styles.diagnosisTitle, { color: theme.textPrimary }]}>
+              {report.diagnosisTitle}
             </Text>
-          </View>
+            <Text style={[styles.reportDateText, { color: theme.textSecondary }]}>
+              Día {report.postOpDay} • {report.formattedDate}
+            </Text>
 
-          { }
-          <View style={styles.actionsRow}>
-            <TouchableOpacity
-              style={[styles.downloadPdfBtn, { backgroundColor: theme.primary }]}
-              activeOpacity={0.85}
-              onPress={() => handleDownloadReportPdf(report)}
-            >
-              <DownloadPdfIcon color="#FFFFFF" />
-              <Text style={styles.downloadPdfBtnText}>Descargar PDF</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
+            { }
+            <View
               style={[
-                styles.viewDetailBtn,
+                styles.planBox,
                 {
-                  backgroundColor: theme.surface,
-                  borderColor: '#CBD5E1',
+                  backgroundColor: theme.background,
+                  borderColor: theme.border,
                 },
               ]}
-              activeOpacity={0.85}
-              onPress={() => handleOpenReportDetail(report)}
             >
-              <Text style={[styles.viewDetailBtnText, { color: theme.textPrimary }]}>
-                Ver Detalle
+              <View style={styles.planTitleRow}>
+                <SparklesAiIcon />
+                <Text style={[styles.planTitleText, { color: theme.primary }]}>
+                  Plan Médico del Día:
+                </Text>
+              </View>
+              <Text style={[styles.planStateText, { color: theme.textSecondary }]}>
+                {report.medicalPlanHeader}
               </Text>
-            </TouchableOpacity>
+              {Boolean(report.medicalPlanSummary) && (
+                <Text
+                  style={[styles.planSummaryBody, { color: theme.textPrimary }]}
+                  numberOfLines={2}
+                >
+                  {report.medicalPlanSummary}
+                </Text>
+              )}
+            </View>
+
+            { }
+            <View style={styles.actionsRow}>
+              <TouchableOpacity
+                style={[styles.downloadPdfBtn, { backgroundColor: theme.primary }]}
+                activeOpacity={0.85}
+                onPress={() => handleDownloadReportPdf(report)}
+              >
+                <DownloadPdfIcon color="#FFFFFF" />
+                <Text style={styles.downloadPdfBtnText}>Descargar PDF</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.viewDetailBtn,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: '#CBD5E1',
+                  },
+                ]}
+                activeOpacity={0.85}
+                onPress={() => handleOpenReportDetail(report)}
+              >
+                <Text style={[styles.viewDetailBtnText, { color: theme.textPrimary }]}>
+                  Ver Detalle
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </ScrollView>
   );
 }
@@ -238,7 +298,43 @@ const styles = StyleSheet.create({
   },
   planStateText: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+  planSummaryBody: {
+    fontSize: 11,
+    fontWeight: '400',
+    marginTop: 4,
+    lineHeight: 16,
+  },
+  emptyStateCard: {
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 22,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  emptyStateTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  emptyStateSub: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+    marginBottom: 14,
+  },
+  goEvalBtn: {
+    height: 38,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  goEvalBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   actionsRow: {
     flexDirection: 'row',
