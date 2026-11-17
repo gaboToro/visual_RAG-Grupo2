@@ -7,17 +7,27 @@ import {
 } from '../types';
 
 const API_GATEWAY_URL = 'http://localhost:4000';
+let sessionAuthToken: string | null = null;
+
+export function setSessionAuthToken(token: string | null): void {
+  sessionAuthToken = token;
+}
 
 async function fetchWithTimeout(endpoint: string, options: RequestInit = {}): Promise<any> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 2500);
+
+  const authHeader: Record<string, string> = sessionAuthToken
+    ? { Authorization: `Bearer ${sessionAuthToken}` }
+    : {};
 
   try {
     const response = await fetch(`${API_GATEWAY_URL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(options.headers || {}),
+        ...authHeader,
+        ...((options.headers as Record<string, string>) || {}),
       },
       signal: controller.signal,
     });
@@ -38,13 +48,21 @@ export async function loginViaGateway(
   email: string,
   password: string,
   role: UserRole
-): Promise<{ user: UserProfile | null; unreachable: boolean; errorMessage?: string }> {
+): Promise<{
+  user: UserProfile | null;
+  token?: string;
+  unreachable: boolean;
+  errorMessage?: string;
+}> {
   try {
     const res = await fetchWithTimeout('/api/identity/login', {
       method: 'POST',
       body: JSON.stringify({ email, password, role }),
     });
-    return { user: res.user as UserProfile, unreachable: false };
+    if (res.token) {
+      setSessionAuthToken(res.token);
+    }
+    return { user: res.user as UserProfile, token: res.token, unreachable: false };
   } catch (err: any) {
     if (err && typeof err.status === 'number' && err.status >= 400 && err.status < 500) {
       return {
@@ -115,7 +133,7 @@ export async function updatePatientProfileViaGateway(
 
 export async function updateDoctorProfileViaGateway(
   doctorId: string,
-  payload: { specialty: string; hospital: string }
+  payload: { specialty: string; hospital: string; medicalLicense?: string }
 ): Promise<UserProfile | null> {
   try {
     const res = await fetchWithTimeout(`/api/identity/doctors/${doctorId}/profile`, {
@@ -206,5 +224,27 @@ export async function fetchPharmacyRecommendationsViaGateway(params: {
     return (res as PharmacyRecommendationDTO) || null;
   } catch (_err) {
     return null;
+  }
+}
+
+export async function fetchReportByFolioViaGateway(
+  folio: string
+): Promise<WoundReportDTO | null> {
+  try {
+    const res = await fetchWithTimeout(`/api/rag/reports/folio/${encodeURIComponent(folio)}`, {
+      method: 'GET',
+    });
+    return (res.report as WoundReportDTO) || null;
+  } catch (_err) {
+    return null;
+  }
+}
+
+export async function checkGatewayHealth(): Promise<boolean> {
+  try {
+    const res = await fetchWithTimeout('/health', { method: 'GET' });
+    return res?.status === 'UP';
+  } catch (_err) {
+    return false;
   }
 }

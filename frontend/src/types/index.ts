@@ -29,6 +29,7 @@ export interface SurgeryScheduleDTO {
   currentDay: number;
   remainingDays: number;
   completionPercentage: number;
+  isCompleted?: boolean;
 }
 
 export interface PostOpRecordDTO {
@@ -55,6 +56,7 @@ export interface WoundReportDTO {
   photosCount: number;
   photoLabels: string[];
   photoUris?: string[];
+  patientNotes?: string;
   medicalPlanHeader: string;
   medicalPlanSummary: string;
   clinicalSuggestions: string;
@@ -89,6 +91,9 @@ export interface RecommendedMedicationItemDTO {
   subtitle: string;
   price: number;
   formattedPrice: string;
+  savingsAmount?: number;
+  alternativePharmacyName?: string;
+  alternativeFormattedPrice?: string;
   orderUrl: string;
 }
 
@@ -101,5 +106,7 @@ export interface PharmacyRecommendationDTO {
     summary: string;
   };
   priceComparison: PriceComparisonDTO;
+  totalSavingsAmount?: number;
+  totalSavingsLabel?: string;
   recommendedItems: RecommendedMedicationItemDTO[];
 }
