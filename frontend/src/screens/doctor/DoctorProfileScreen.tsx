@@ -30,12 +30,23 @@ export function DoctorProfileScreen(): React.JSX.Element {
   const [hospital, setHospital] = useState<string>(
     doctorProfile.clinicalInfo.hospital || 'Hospital Metropolitano'
   );
+  const [medicalLicense, setMedicalLicense] = useState<string>(
+    doctorProfile.clinicalInfo.medicalLicense || 'MSP-178942'
+  );
 
   async function handleSaveProfessionalData(): Promise<void> {
-    await updateDoctorProfessionalInfo(specialty, hospital);
+    if (!specialty.trim() || !hospital.trim()) {
+      Alert.alert(
+        'Campos requeridos',
+        'Por favor ingrese su especialidad médica y centro hospitalario.'
+      );
+      return;
+    }
+
+    await updateDoctorProfessionalInfo(specialty, hospital, medicalLicense);
     Alert.alert(
       'Datos Profesionales Guardados',
-      'Su especialidad y centro hospitalario se han actualizado y sincronizado correctamente.'
+      'Su especialidad, licencia y centro hospitalario se han actualizado y sincronizado correctamente.'
     );
   }
 
@@ -171,6 +182,27 @@ export function DoctorProfileScreen(): React.JSX.Element {
             onChangeText={setHospital}
             style={[styles.inputText, { color: theme.textPrimary }]}
             placeholder="Hospital Metropolitano"
+            placeholderTextColor={theme.textSecondary}
+          />
+        </View>
+
+        <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+          Registro Profesional MSP:
+        </Text>
+        <View
+          style={[
+            styles.inputBox,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.border,
+            },
+          ]}
+        >
+          <TextInput
+            value={medicalLicense}
+            onChangeText={setMedicalLicense}
+            style={[styles.inputText, { color: theme.textPrimary }]}
+            placeholder="MSP-178942"
             placeholderTextColor={theme.textSecondary}
           />
         </View>

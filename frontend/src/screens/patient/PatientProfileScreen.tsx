@@ -14,6 +14,8 @@ import {
   ThemeModeIcon,
 } from '../../components/icons/FigmaIcons';
 
+const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+
 export function PatientProfileScreen(): React.JSX.Element {
   const {
     currentUser,
@@ -30,9 +32,20 @@ export function PatientProfileScreen(): React.JSX.Element {
   const [emergencyContact, setEmergencyContact] = useState<string>(
     currentUser?.clinicalInfo?.emergencyContact || 'Carmen Casa (Madre) - 0987654321'
   );
+  const [bloodType, setBloodType] = useState<string>(
+    currentUser?.clinicalInfo?.bloodType || 'O+'
+  );
 
   async function handleSaveClinicalData(): Promise<void> {
-    await updatePatientClinicalInfo(fullName, emergencyContact);
+    if (!fullName.trim() || !emergencyContact.trim()) {
+      Alert.alert(
+        'Campos requeridos',
+        'Por favor ingrese su nombre completo y un contacto de emergencia válido.'
+      );
+      return;
+    }
+
+    await updatePatientClinicalInfo(fullName, emergencyContact, bloodType);
     Alert.alert(
       'Datos Clínicos Guardados',
       'La información clínica del paciente se ha actualizado y sincronizado correctamente.'
@@ -173,6 +186,38 @@ export function PatientProfileScreen(): React.JSX.Element {
             placeholder="Nombre y teléfono de emergencia"
             placeholderTextColor={theme.textSecondary}
           />
+        </View>
+
+        <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>
+          Grupo Sanguíneo:
+        </Text>
+        <View style={styles.bloodTypeGrid}>
+          {BLOOD_TYPES.map((group) => {
+            const active = bloodType === group;
+            return (
+              <TouchableOpacity
+                key={group}
+                activeOpacity={0.8}
+                onPress={() => setBloodType(group)}
+                style={[
+                  styles.bloodOptionPill,
+                  {
+                    backgroundColor: active ? theme.primaryLight : theme.background,
+                    borderColor: active ? theme.primary : theme.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.bloodOptionText,
+                    { color: active ? theme.primary : theme.textSecondary },
+                  ]}
+                >
+                  {group}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <TouchableOpacity
@@ -332,6 +377,22 @@ const styles = StyleSheet.create({
   inputText: {
     fontSize: 12,
     fontWeight: '500',
+  },
+  bloodTypeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 14,
+  },
+  bloodOptionPill: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  bloodOptionText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   saveClinicalBtn: {
     height: 40,
