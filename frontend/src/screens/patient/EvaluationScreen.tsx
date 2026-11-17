@@ -30,6 +30,13 @@ function isRealImageUri(uri: string): boolean {
   );
 }
 
+const QUICK_SYMPTOM_TAGS: { label: string; value: string; isAlert?: boolean }[] = [
+  { label: 'Sin dolor / Limpia', value: 'Herida limpia y sin dolor' },
+  { label: 'Borde engrosado', value: 'Borde engrosado y elevado' },
+  { label: 'Granulación temprana', value: 'Tejido rosado de granulación temprana' },
+  { label: 'Fiebre o secreción', value: 'Presenta fiebre y secreción en el borde', isAlert: true },
+];
+
 export function EvaluationScreen(): React.JSX.Element {
   const {
     currentUser,
@@ -111,6 +118,22 @@ export function EvaluationScreen(): React.JSX.Element {
     setActivePatientTab('REPORTS');
   }
 
+  function handleSelectQuickSymptom(symptomValue: string): void {
+    if (patientNotes.toLowerCase().includes(symptomValue.toLowerCase())) {
+      setPatientNotes('');
+    } else {
+      setPatientNotes(symptomValue);
+    }
+  }
+
+  const notesLower = patientNotes.toLowerCase();
+  const hasAlarmSymptom =
+    notesLower.includes('fiebre') ||
+    notesLower.includes('pus') ||
+    notesLower.includes('secreci') ||
+    notesLower.includes('sangrado') ||
+    notesLower.includes('abierta');
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
@@ -179,7 +202,9 @@ export function EvaluationScreen(): React.JSX.Element {
           Tomar Fotografía
         </Text>
         <Text style={[styles.captureSubtitle, { color: theme.textSecondary }]}>
-          Puedes ingresar de 1 a 4 fotos de tu incisión
+          {capturedPhotos.length > 0
+            ? `${capturedPhotos.length} de 4 foto(s) lista(s) para evaluación Visual RAG`
+            : 'Puedes ingresar de 1 a 4 fotos de tu incisión'}
         </Text>
 
         { }
@@ -225,6 +250,67 @@ export function EvaluationScreen(): React.JSX.Element {
                   },
                 ]}
               />
+
+              <View style={styles.symptomTagsRow}>
+                {QUICK_SYMPTOM_TAGS.map((tag) => {
+                  const selected = patientNotes
+                    .toLowerCase()
+                    .includes(tag.value.toLowerCase());
+                  return (
+                    <TouchableOpacity
+                      key={tag.label}
+                      activeOpacity={0.8}
+                      onPress={() => handleSelectQuickSymptom(tag.value)}
+                      style={[
+                        styles.symptomTagPill,
+                        {
+                          backgroundColor: selected
+                            ? tag.isAlert
+                              ? theme.dangerLight
+                              : theme.primaryLight
+                            : theme.surfaceMuted,
+                          borderColor: selected
+                            ? tag.isAlert
+                              ? theme.danger
+                              : theme.primary
+                            : theme.border,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.symptomTagText,
+                          {
+                            color: selected
+                              ? tag.isAlert
+                                ? theme.danger
+                                : theme.primary
+                              : theme.textSecondary,
+                          },
+                        ]}
+                      >
+                        {tag.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {hasAlarmSymptom && (
+                <View
+                  style={[
+                    styles.alarmNoticeBox,
+                    {
+                      backgroundColor: theme.dangerLight,
+                      borderColor: theme.dangerBorder,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.alarmNoticeText, { color: theme.danger }]}>
+                    Atención: Si presenta fiebre &gt; 38°C o secreción activa, el motor Visual RAG notificará prioridad médica en su reporte.
+                  </Text>
+                </View>
+              )}
             </View>
 
             <View style={styles.previewActionsRow}>
@@ -447,6 +533,34 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 12,
     fontSize: 12,
+  },
+  symptomTagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 8,
+  },
+  symptomTagPill: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  symptomTagText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  alarmNoticeBox: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginTop: 8,
+  },
+  alarmNoticeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    lineHeight: 14,
   },
   previewActionsRow: {
     flexDirection: 'row',
