@@ -24,7 +24,7 @@ function parseRequestBody(req) {
   });
 }
 
-function forwardToMicroservice(targetUrl, method = 'GET', body = null) {
+function forwardToMicroservice(targetUrl, method = 'GET', body = null, timeoutMs = 3500) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(targetUrl);
     const payloadString = body && method !== 'GET' ? JSON.stringify(body) : null;
@@ -34,6 +34,7 @@ function forwardToMicroservice(targetUrl, method = 'GET', body = null) {
       port: urlObj.port,
       path: urlObj.pathname + urlObj.search,
       method,
+      timeout: timeoutMs,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -58,6 +59,10 @@ function forwardToMicroservice(targetUrl, method = 'GET', body = null) {
       });
     });
 
+    proxyReq.on('timeout', () => {
+      proxyReq.destroy(new Error(`Tiempo de espera agotado al contactar ${targetUrl}`));
+    });
+
     proxyReq.on('error', (err) => {
       reject(err);
     });
@@ -79,14 +84,45 @@ function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
+async function checkAllMicroservicesHealth() {
+  const entries = Object.entries(SERVICES);
+  const checks = await Promise.allSettled(
+    entries.map(async ([key, baseUrl]) => {
+      const res = await forwardToMicroservice(`${baseUrl}/health`, 'GET', null, 1500);
+      return {
+        key,
+        url: baseUrl,
+        status: res.statusCode === 200 ? 'UP' : 'DEGRADED',
+      };
+    })
+  );
+
+  const serviceStatuses = {};
+  for (let i = 0; i < entries.length; i++) {
+    const [key, baseUrl] = entries[i];
+    const check = checks[i];
+    serviceStatuses[key] =
+      check.status === 'fulfilled'
+        ? { url: baseUrl, status: check.value.status }
+        : { url: baseUrl, status: 'DOWN' };
+  }
+  return serviceStatuses;
+}
+
 async function orchestrateFullVisualRagEvaluation(body) {
   const patientId = body.patientId || 'pat-1';
 
-  const clinicalRes = await forwardToMicroservice(
-    `${SERVICES.CLINICAL}/orders/${patientId}`,
-    'GET'
-  );
-  const doctorTreatment = clinicalRes.data?.record || {};
+  let doctorTreatment = {};
+  try {
+    const clinicalRes = await forwardToMicroservice(
+      `${SERVICES.CLINICAL}/orders/${patientId}`,
+      'GET'
+    );
+    doctorTreatment = clinicalRes.data?.record || {};
+  } catch (_err) {
+    doctorTreatment = {};
+  }
+
   const postOpDay =
     body.postOpDay || doctorTreatment?.schedule?.currentDay || 79;
 
@@ -101,21 +137,27 @@ async function orchestrateFullVisualRagEvaluation(body) {
 
   const report = ragRes.data?.report;
 
-  const pharmacyRes = await forwardToMicroservice(
-    `${SERVICES.PHARMACY}/recommendations`,
-    'POST',
-    {
-      postOpDay,
-      woundClassification: report?.diagnosisTitle || 'Cicatrización Normal',
-      prescribedMedications:
-        doctorTreatment.prescribedMedications || report?.recommendedMedications || [],
-    }
-  );
+  let pharmacyRecommendation = null;
+  try {
+    const pharmacyRes = await forwardToMicroservice(
+      `${SERVICES.PHARMACY}/recommendations`,
+      'POST',
+      {
+        postOpDay,
+        woundClassification: report?.diagnosisTitle || 'Cicatrización Normal',
+        prescribedMedications:
+          doctorTreatment.prescribedMedications || report?.recommendedMedications || [],
+      }
+    );
+    pharmacyRecommendation = pharmacyRes.data;
+  } catch (_err) {
+    pharmacyRecommendation = null;
+  }
 
   return {
     report,
     doctorTreatment,
-    pharmacyRecommendation: pharmacyRes.data,
+    pharmacyRecommendation,
   };
 }
 
@@ -143,6 +185,13 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
           req.method,
           body
         );
+        const deletePatientMatch = subPath.match(/^\/patients\/([^/]+)$/);
+        if (req.method === 'DELETE' && deletePatientMatch && response.statusCode === 200) {
+          forwardToMicroservice(
+            `${SERVICES.CLINICAL}/orders/${deletePatientMatch[1]}`,
+            'DELETE'
+          ).catch(() => {});
+        }
         return sendJson(res, response.statusCode, response.data);
       }
 
@@ -177,10 +226,12 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
       }
 
       if (req.method === 'GET' && pathname === '/health') {
+        const serviceStatuses = await checkAllMicroservicesHealth();
         return sendJson(res, 200, {
           gateway: 'visual-rag-api-gateway',
           status: 'UP',
           microservices: SERVICES,
+          serviceStatuses,
         });
       }
 
