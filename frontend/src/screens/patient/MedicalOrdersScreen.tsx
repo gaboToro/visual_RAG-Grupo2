@@ -13,14 +13,27 @@ import {
   SurgeryCalendarIcon,
   ProhibitedActionIcon,
   AllowedCareIcon,
+  AlertTriangleIcon,
 } from '../../components/icons/FigmaIcons';
 
 export function MedicalOrdersScreen(): React.JSX.Element {
-  const { currentUser, postOpRecords, refreshMedicalOrders, theme } = useApp();
+  const {
+    currentUser,
+    postOpRecords,
+    refreshMedicalOrders,
+    setActivePatientTab,
+    theme,
+  } = useApp();
 
   const patientId = currentUser?.id || 'pat-1';
   const record = postOpRecords[patientId] || postOpRecords['pat-1'];
-  const { schedule, prohibitedActions, allowedCares } = record;
+  const {
+    schedule,
+    prohibitedActions,
+    allowedCares,
+    allergiesAndAlerts = [],
+    prescribedMedications = [],
+  } = record;
 
   async function handleRefreshOrders(): Promise<void> {
     const synced = await refreshMedicalOrders();
@@ -221,6 +234,88 @@ export function MedicalOrdersScreen(): React.JSX.Element {
           </View>
         ))}
       </View>
+
+      {allergiesAndAlerts.length > 0 && (
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.dangerBorder,
+            },
+          ]}
+        >
+          <View style={styles.cardHeaderIconRow}>
+            <AlertTriangleIcon size={38} />
+            <Text style={[styles.cardSectionTitle, { color: theme.textPrimary }]}>
+              Signos de Alerta y Alergias
+            </Text>
+          </View>
+
+          {allergiesAndAlerts.map((alertText, idx) => (
+            <View
+              key={`alert-${idx}`}
+              style={[
+                styles.indicationItemBox,
+                {
+                  backgroundColor: theme.dangerLight,
+                  borderColor: theme.dangerBorder,
+                },
+              ]}
+            >
+              <View style={[styles.bulletDot, { backgroundColor: theme.danger }]} />
+              <Text style={[styles.indicationText, { color: theme.textPrimary }]}>
+                {alertText}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {prescribedMedications.length > 0 && (
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+            },
+          ]}
+        >
+          <View style={styles.medsHeaderRow}>
+            <Text style={[styles.medsSectionTitle, { color: theme.textPrimary }]}>
+              Insumos y Medicamentos Recetados
+            </Text>
+            <TouchableOpacity
+              style={[styles.goPharmacyBtn, { backgroundColor: theme.primaryLight }]}
+              activeOpacity={0.8}
+              onPress={() => setActivePatientTab('PHARMACY')}
+            >
+              <Text style={[styles.goPharmacyBtnText, { color: theme.primary }]}>
+                Ver Precios ↗
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {prescribedMedications.map((med, idx) => (
+            <View
+              key={`rx-${idx}`}
+              style={[
+                styles.indicationItemBox,
+                {
+                  backgroundColor: theme.background,
+                  borderColor: theme.border,
+                },
+              ]}
+            >
+              <View style={[styles.bulletDot, { backgroundColor: theme.emerald }]} />
+              <Text style={[styles.indicationText, { color: theme.textPrimary }]}>
+                {med}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -356,5 +451,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 18,
+  },
+  medsHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  medsSectionTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    flex: 1,
+    marginRight: 8,
+  },
+  goPharmacyBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  goPharmacyBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
 });
