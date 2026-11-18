@@ -15,7 +15,7 @@ Aplicación móvil en **React Native administrada por Expo** y Back-End con **Ar
 
 ## Enlace al Prototipo Oficial en Figma
 
-- **Diseño UI/UX en Figma (10 Pantallas Móviles)**: [https://www.figma.com/design/NFeaKH7j5osWmqY9p6IZeW/VISUALRAGTRAIE--copia-?node-id=1-2&t=KGtySS3NCi3LvJYo-1](https://www.figma.com/design/NFeaKH7j5osWmqY9p6IZeW/VISUALRAGTRAIE--copia-?node-id=1-2&t=KGtySS3NCi3LvJYo-1)
+- **Diseño UI/UX en Figma (10 Pantallas Móviles)**: [https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0](https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0)
 
 ---
 
