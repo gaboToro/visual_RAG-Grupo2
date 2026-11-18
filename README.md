@@ -1,78 +1,72 @@
-﻿# Visual RAG â€” Triage & PostOp Monitor
+﻿# Visual RAG — Triage & PostOp Monitor
 
-AplicaciÃ³n mÃ³vil en **React Native administrada por Expo** y Back-End con **Arquitectura de Microservicios bajo Domain-Driven Design (DDD)**, construida fielmente a partir del prototipo de Figma (**Visual RAG - Triage & PostOp Monitor**, 10 pantallas mÃ³viles) mediante ingenierÃ­a de software asistida por Inteligencia Artificial.
+Aplicación móvil en **React Native administrada por Expo** y Back-End con **Arquitectura de Microservicios bajo Domain-Driven Design (DDD)**, construida fielmente a partir del prototipo de Figma (**Visual RAG - Triage & PostOp Monitor**, 10 pantallas móviles) mediante ingeniería de software asistida por Inteligencia Artificial.
 
 ---
 
-## Integrantes del Equipo (Grupo 2)
+## Integrantes del Grupo
 
-- **Casa Jean Carlos**
-- **RiofrÃ­o RamsÃ©s**
-- **Saltos Jose**
+- **Casa Nelson**
+- **Riofrío Ramsés**
 - **Toro Gabriel**
+- **Toapanta Anthony**
 
 ---
 
-## Enlace al Prototipo Oficial en Figma
+## Enlaces Principales del Proyecto
 
-- **DiseÃ±o UI/UX en Figma (10 Pantallas MÃ³viles)**: [https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0](https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0)
-
----
-
-## 1. ProblemÃ¡tica Identificada y Propuesta de SoluciÃ³n
-
-### ProblemÃ¡tica Encontrada
-Durante la etapa de recuperaciÃ³n postoperatoria ambulatoria (en el hogar), tanto los pacientes como los mÃ©dicos cirujanos enfrentan tres problemas crÃ­ticos:
-1. **Incertidumbre y detecciÃ³n tardÃ­a de complicaciones en heridas quirÃºrgicas**: Los pacientes no cuentan con el criterio clÃ­nico para distinguir entre un proceso de cicatrizaciÃ³n normal y signos tempranos de infecciÃ³n, dehiscencia o cicatrizaciÃ³n hipertrÃ³fica. Esto ocasiona que complicaciones tratables se agraven antes de acudir al mÃ©dico o, por el contrario, que se saturen las consultas por alarmas infundadas.
-2. **DesconexiÃ³n con las Ã³rdenes mÃ©dicas personalizadas**: Las indicaciones postoperatorias en papel (dÃ­as de reposo, acciones prohibidas, cuidados permitidos y signos de alarma) suelen extraviarse o incumplirse por falta de un seguimiento diario interactivo.
-3. **Sobrecosto y fricciÃ³n en la adquisiciÃ³n de medicamentos e insumos de curaciÃ³n**: Al adquirir antisÃ©pticos, analgÃ©sicos o apÃ³sitos especializados (como Clorhexidina o apÃ³sitos Tegaderm), el paciente desconoce en quÃ© cadena farmacÃ©utica se encuentran al mejor precio o con entrega inmediata.
-
-### SoluciÃ³n Propuesta: Visual RAG
-**Visual RAG (Triage & PostOp Monitor)** resuelve esta problemÃ¡tica conectando en tiempo real al **MÃ©dico Cirujano** y al **Paciente** en un ecosistema mÃ³vil inteligente:
-- El **MÃ©dico Cirujano** registra y actualiza la **Ficha Postoperatoria** digital del paciente (procedimiento, cronograma de reposo, prohibiciones, cuidados e insumos recetados).
-- El **Paciente** sube **fotografÃ­as de su herida postoperatoria**, las cuales son evaluadas por un motor **Visual RAG (Retrieval-Augmented Generation con Machine Learning)** que compara los vectores visuales (`VisualEmbedding`) contra un dataset clÃ­nico validado, emitiendo un **Reporte ClÃ­nico Oficial** verificado.
-- De acuerdo con el tratamiento mÃ©dico subido por su doctor y el estado actual de la herida, la aplicaciÃ³n **compara precios entre farmacias aliadas (ej. Cruz Azul vs. Fybeca)** y recomienda los medicamentos e insumos al **mejor precio del mercado**.
+- **Repositorio en GitHub**: [https://github.com/gaboToro/visual_RAG-Grupo8](https://github.com/gaboToro/visual_RAG-Grupo8)
+- **Diseño UI/UX en Figma (10 Pantallas Móviles)**: [https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0](https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0)
 
 ---
 
-## 2. Modelo de Negocio (CÃ³mo Genera Ingresos el Software)
+## 1. Problemática Identificada y Propuesta de Solución
 
-Para garantizar una adopciÃ³n masiva y sin fricciÃ³n, **la aplicaciÃ³n es 100% gratuita tanto para los Pacientes como para los MÃ©dicos Cirujanos**. De esta forma, el mÃ©dico digitaliza el seguimiento de sus pacientes sin costo y el paciente accede gratuitamente al triaje visual y al comparador de precios.
+### Problemática Encontrada
+Durante la etapa de recuperación postoperatoria ambulatoria (en el hogar), tanto los pacientes como los médicos cirujanos enfrentan tres problemas críticos:
+1. **Incertidumbre y detección tardía de complicaciones en heridas quirúrgicas**: Los pacientes no cuentan con el criterio clínico para distinguir entre un proceso de cicatrización normal y signos tempranos de infección, dehiscencia o cicatrización hipertrófica. Esto ocasiona que complicaciones tratables se agraven antes de acudir al médico o, por el contrario, que se saturen las consultas por alarmas infundadas.
+2. **Desconexión con las órdenes médicas personalizadas**: Las indicaciones postoperatorias en papel (días de reposo, acciones prohibidas, cuidados permitidos y signos de alarma) suelen extraviarse o incumplirse por falta de un seguimiento diario interactivo.
+3. **Sobrecosto y fricción en la adquisición de medicamentos e insumos de curación**: Al adquirir antisépticos, analgésicos o apósitos especializados (como Clorhexidina o apósitos Tegaderm), el paciente desconoce en qué cadena farmacéutica se encuentran al mejor precio o con entrega inmediata.
 
-El software genera ingresos de forma sostenible a travÃ©s de **dos lÃ­neas de negocio B2B / B2B2C altamente viables**:
-
-1. **ComisiÃ³n por TransacciÃ³n en Farmacias Aliadas (Marketplace FarmacÃ©utico â€” *Affiliate / CPA*)**:
-   - **CÃ³mo funciona**: Cada vez que un paciente necesita adquirir los medicamentos o insumos de curaciÃ³n recetados por su cirujano (ej. *Clorhexidina SoluciÃ³n 2%* o *ApÃ³sito Tegaderm 3M*), la app le muestra en quÃ© farmacia estÃ¡n mÃ¡s baratos y permite comprarlos desde el botÃ³n **`Pedir Online â†—`**.
-   - **Por quÃ© es rentable y creÃ­ble**: Las cadenas farmacÃ©uticas aliadas (como **Cruz Azul** o **Fybeca**) otorgan a **Visual RAG** un porcentaje de comisiÃ³n (entre el **6% y el 12%** sobre el valor de la venta) por cada compra concretada desde la aplicaciÃ³n. Para las farmacias esto representa clientes seguros con receta mÃ©dica activa y alta recurrencia durante todo su postoperatorio, sin que el paciente pague un centavo extra.
-
-2. **Convenios con Aseguradoras de Salud y Medicina Prepagada (ReducciÃ³n de Siniestralidad B2B)**:
-   - **CÃ³mo funciona**: Las empresas de seguros mÃ©dicos y medicina prepagada integran **Visual RAG** dentro de su cobertura postoperatoria pagando una tarifa fija por paciente operado monitoreado (*tarifa por episodio quirÃºrgico*).
-   - **Por quÃ© es rentable y creÃ­ble**: Para una aseguradora, una infecciÃ³n postoperatoria detectada tarde o un reingreso hospitalario de urgencia cuesta miles de dÃ³lares en hospitalizaciÃ³n y reintervenciÃ³n. Al financiar el monitoreo preventivo con **Visual RAG**, la aseguradora detecta signos de alerta a tiempo desde casa y reduce drÃ¡sticamente sus gastos por complicaciones evitables, convirtiendo el pago del software en un ahorro directo para la aseguradora.
-
----
-
-## 3. Uso de Inteligencia Artificial en la CreaciÃ³n del Proyecto
-
-Este proyecto fue desarrollado aplicando metodologÃ­as modernas de **IngenierÃ­a de Software Asistida por IA (AI-Driven Software Development)**, integrando diseÃ±o UI/UX desde Figma, arquitectura limpia por dominios y desarrollo mÃ³vil multiplataforma.
-
-### Inteligencia Artificial y Herramientas Utilizadas
-- **Agente de IA e IDE**: **Google Antigravity (AGY)** impulsado por modelos fundacionales avanzados de generaciÃ³n de cÃ³digo y anÃ¡lisis multimodal (**Claude Opus 4.6 / Gemini**).
-- **IntegraciÃ³n Directa con DiseÃ±o (MCP)**: Servidor **Figma MCP (Model Context Protocol)** (`get_metadata`, `get_design_context`, `get_screenshot`), utilizado por la IA para inspeccionar directamente los nodos de las 10 pantallas del prototipo en Figma, extraer la paleta de colores clÃ­nica, las medidas exactas y descargar los 272 vectores SVG locales sin intervenciÃ³n manual.
-
-### Prompt Inicial Utilizado
-A continuaciÃ³n, se documenta de forma Ã­ntegra el **prompt inicial** entregado a la IA para la generaciÃ³n arquitectÃ³nica y funcional del proyecto:
-
-> *"Crea el proyecto visual RAG basÃ¡ndote en un prototipo mÃ³vil realizado en figma (https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0) usando ReactNative administrado por Expo para el front-end y genera el back-end con una arquitectura de microservicios y usando la metodologÃ­a Domain-Driven Design, mantÃ©n una estructura de carpetas ordenadas y comenta cada funciÃ³n dentro del cÃ³digo para entender que hace. Visual RAG  es una APP donde el Paciente sube la foto de su herida postoperatoria, su foto es evaluada usando un dataset evaluado con machine learning (RAG) y acorde a su tratamiento mÃ©dico subido por su doctor la APP recomienda medicamentos a mejores precios"*
+### Solución Propuesta: Visual RAG
+**Visual RAG** es un ecosistema móvil integral de triaje y monitorización postoperatoria que conecta al paciente con su médico tratante:
+- El **Médico Cirujano** registra y actualiza la **Ficha Postoperatoria** digital del paciente (procedimiento, cronograma de reposo, prohibiciones, cuidados e insumos recetados).
+- El **Paciente** sube **fotografías de su herida postoperatoria**, las cuales son evaluadas por un motor **Visual RAG (Retrieval-Augmented Generation con Machine Learning)** que compara los vectores visuales (`VisualEmbedding`) contra un dataset clínico validado, emitiendo un **Reporte Clínico Oficial** verificado.
+- De acuerdo con el tratamiento médico subido por su doctor y el estado actual de la herida, la aplicación **compara precios entre farmacias aliadas (ej. Cruz Azul vs. Fybeca)** y recomienda los medicamentos e insumos al **mejor precio del mercado**.
 
 ---
 
-## 4. Flujo de Negocio Principal
+## 2. Modelo de Negocio (Monetización Real y Sostenible)
 
-1. **Paciente sube la fotografÃ­a de su herida postoperatoria (1 a 4 fotos)**: Desde la pestaÃ±a **EvaluaciÃ³n**, el paciente captura o selecciona las imÃ¡genes de su incisiÃ³n quirÃºrgica (`Correcion Neuronal`).
-2. **EvaluaciÃ³n con Dataset Machine Learning (Visual RAG)**: El microservicio `visual-rag-service` extrae el vector de caracterÃ­sticas visuales (`VisualEmbedding`), ejecuta una bÃºsqueda de similitud coseno ($k\text{-NN}$) contra el dataset clÃ­nico de heridas postoperatorias (`PostOpWoundDataset`) y genera un **Reporte ClÃ­nico Oficial** verificado (`REP-475381`, `CicatrizaciÃ³n Normal`, `EvoluciÃ³n Favorable`).
-3. **AlineaciÃ³n con el Tratamiento MÃ©dico subido por el Doctor**: El microservicio `clinical-orders-service` gestiona la **Ficha Postoperatoria** configurada por el MÃ©dico Cirujano (cronograma de reposo, acciones prohibidas, cuidados permitidos, signos de alerta e insumos recetados).
-4. **RecomendaciÃ³n de Medicamentos a Mejores Precios**: El microservicio `pharmacy-pricing-service` cruza los medicamentos del tratamiento mÃ©dico y del diagnÃ³stico Visual RAG contra los catÃ¡logos de farmacias aliadas (**Cruz Azul** vs **Fybeca**), calculando el ahorro (`Ahorras $0.95 en este insumo`, `Cruz Azul $3.20 Precio MÃ¡s Bajo` vs `Fybeca $4.15 Entrega en 30 min`).
-5. **Scraper Web de Farmacias en Tiempo Real**: Incorpora un extractor web automatizado (`FybecaPharmacyScraper`) que consulta directamente el catÃ¡logo digital de farmacias vÃ­a HTTPS nativo, analizando precios de mercado en vivo (`data-gtm` / ecommerce) con soporte resiliente de contingencia offline.
+El software genera ingresos de forma sostenible a través de **dos líneas de negocio B2B / B2B2C altamente viables**:
+
+1. **Comisión por Transacción en Farmacias Aliadas (Marketplace Farmacéutico — *Affiliate / CPA*)**:
+   - **Cómo funciona**: Cada vez que un paciente necesita adquirir los medicamentos o insumos de curación recetados por su cirujano (ej. *Clorhexidina Solución 2%* o *Apósito Tegaderm 3M*), la app le muestra en qué farmacia están más baratos y permite comprarlos desde el botón **`Pedir Online ↗`**.
+   - **Por qué es rentable y creíble**: Las cadenas farmacéuticas aliadas (como **Cruz Azul** o **Fybeca**) otorgan a **Visual RAG** un porcentaje de comisión (entre el **6% y el 12%** sobre el valor de la venta) por cada compra concretada desde la aplicación. Para las farmacias esto representa clientes seguros con receta médica activa y alta recurrencia durante todo su postoperatorio, sin que el paciente pague un centavo extra.
+
+2. **Convenios con Aseguradoras de Salud y Medicina Prepagada (Reducción de Siniestralidad B2B)**:
+   - **Cómo funciona**: Se comercializan licencias corporativas a aseguradoras médicas privadas y clínicas quirúrgicas.
+   - **Por qué es rentable y creíble**: Para una aseguradora o clínica, una infección quirúrgica no detectada a tiempo que termina en reingreso a quirófano o terapia intensiva cuesta entre \$3,000 y \$15,000 USD. **Visual RAG** actúa como un sistema de alerta temprana que detecta complicaciones a tiempo, reduciendo los costos de siniestralidad de las aseguradoras en más de un 40%. Las aseguradoras pagan una suscripción mensual por paciente monitoreado (\$8 - \$15 USD/mes).
+
+---
+
+## 3. Uso de Inteligencia Artificial en el Flujo de la Aplicación
+
+La Inteligencia Artificial se encuentra integrada en el flujo central de valor del sistema mediante **Machine Learning y Retrieval-Augmented Generation Visual**:
+
+- **Extracción de Características Visuales (`VisualEmbedding`)**: Transforma las imágenes de incisiones tomadas por el paciente en vectores densos normalizados representativos de patrones dérmicos (colorimetría de bordes, eritema perilesional, exudado y aproximación de bordes).
+- **Recuperación Aumentada (Visual RAG)**: Mediante un algoritmo de similitud por cosenos ($k\text{-NN}$), la imagen del paciente se contrasta contra una base de conocimiento curada de casos postoperatorios (`PostOpWoundDataset`), recuperando el diagnóstico clínico más cercano y la evidencia médica respaldada.
+- **Generación de Reportes Clínicos Oficiales**: Emite un diagnóstico fundamentado con métricas de confianza (`confidence`), badges de triaje preventivo y consejos médicos automáticos alineados a la evolución de la herida.
+
+---
+
+## 4. Flujo Completo del Software
+
+1. **Paciente sube la fotografía de su herida postoperatoria (1 a 4 fotos)**: Desde la pestaña **Evaluación**, el paciente captura o selecciona las imágenes de su incisión quirúrgica (`Correcion Neuronal`).
+2. **Evaluación con Dataset Machine Learning (Visual RAG)**: El microservicio `visual-rag-service` extrae el vector de características visuales (`VisualEmbedding`), ejecuta una búsqueda de similitud coseno ($k\text{-NN}$) contra el dataset clínico de heridas postoperatorias (`PostOpWoundDataset`) y genera un **Reporte Clínico Oficial** verificado (`REP-475381`, `Cicatrización Normal`, `Evolución Favorable`).
+3. **Alineación con el Tratamiento Médico subido por el Doctor**: El microservicio `clinical-orders-service` gestiona la **Ficha Postoperatoria** configurada por el Médico Cirujano (cronograma de reposo, acciones prohibidas, cuidados permitidos, signos de alerta e insumos recetados).
+4. **Recomendación de Medicamentos a Mejores Precios**: El microservicio `pharmacy-pricing-service` cruza los medicamentos del tratamiento médico y del diagnóstico Visual RAG contra los catálogos de farmacias aliadas (**Cruz Azul** vs **Fybeca**), calculando el ahorro (`Ahorras $0.95 en este insumo`, `Cruz Azul $3.20 Precio Más Bajo` vs `Fybeca $4.15 Entrega en 30 min`).
+5. **Scraper Web de Farmacias en Tiempo Real**: Incorpora un extractor web automatizado (`FybecaPharmacyScraper`) que consulta directamente el catálogo digital de farmacias vía HTTPS nativo, analizando precios de mercado en vivo (`data-gtm` / ecommerce) con soporte resiliente de contingencia offline.
 
 ---
 
@@ -80,113 +74,83 @@ A continuaciÃ³n, se documenta de forma Ã­ntegra el **prompt inicial** entreg
 
 ```text
 visual_RAG-Grupo2/
-â”œâ”€â”€ .gitignore                                    # Reglas de exclusiÃ³n de Git (node_modules, .expo, etc.)
-â”œâ”€â”€ README.md                                     # DocumentaciÃ³n general, modelo de negocio y arquitectura
-â”‚
-â”œâ”€â”€ backend/                                      # Back-End: Microservicios + Domain-Driven Design (DDD)
-â”‚   â”œâ”€â”€ package.json                              # Scripts de arranque y pruebas del Back-End
-â”‚   â”œâ”€â”€ package-lock.json                         # Ãrbol bloqueado de dependencias del Back-End
-â”‚   â”œâ”€â”€ start-all.js                              # Orquestador de los 4 microservicios + API Gateway
-â”‚   â”œâ”€â”€ test-microservices.js                     # Suite de verificaciÃ³n DDD de extremo a extremo
-â”‚   â”œâ”€â”€ api-gateway/                              # Punto de entrada Ãºnico (Puerto 4000)
-â”‚   â”‚   â””â”€â”€ src/
-â”‚   â”‚       â””â”€â”€ index.js                          # Enrutador central y orquestador de Triage Visual RAG
-â”‚   â””â”€â”€ services/
-â”‚       â”œâ”€â”€ identity-service/                     # Bounded Context 1: Identidad y Perfiles (Puerto 4001)
-â”‚       â”‚   â””â”€â”€ src/
-â”‚       â”‚       â”œâ”€â”€ index.js                      # Servidor HTTP del microservicio de identidad
-â”‚       â”‚       â”œâ”€â”€ domain/
-â”‚       â”‚       â”‚   â”œâ”€â”€ entities/User.js          # Entidad raÃ­z de agregado User
-â”‚       â”‚       â”‚   â”œâ”€â”€ value-objects/ClinicalInfo.js
-â”‚       â”‚       â”‚   â””â”€â”€ repositories/IUserRepository.js
-â”‚       â”‚       â”œâ”€â”€ application/
-â”‚       â”‚       â”‚   â””â”€â”€ use-cases/IdentityUseCases.js
-â”‚       â”‚       â””â”€â”€ infrastructure/
-â”‚       â”‚           â”œâ”€â”€ persistence/InMemoryUserRepository.js
-â”‚       â”‚           â””â”€â”€ http/IdentityController.js
-â”‚       â”œâ”€â”€ clinical-orders-service/              # Bounded Context 2: Ã“rdenes y Ficha PostOp (Puerto 4002)
-â”‚       â”‚   â””â”€â”€ src/
-â”‚       â”‚       â”œâ”€â”€ index.js                      # Servidor HTTP del microservicio de Ã³rdenes clÃ­nicas
-â”‚       â”‚       â”œâ”€â”€ domain/
-â”‚       â”‚       â”‚   â”œâ”€â”€ entities/PostOpRecord.js  # Entidad raÃ­z Ficha Postoperatoria
-â”‚       â”‚       â”‚   â”œâ”€â”€ value-objects/SurgerySchedule.js
-â”‚       â”‚       â”‚   â””â”€â”€ repositories/IPostOpRecordRepository.js
-â”‚       â”‚       â”œâ”€â”€ application/
-â”‚       â”‚       â”‚   â””â”€â”€ use-cases/ClinicalOrdersUseCases.js
-â”‚       â”‚       â””â”€â”€ infrastructure/
-â”‚       â”‚           â”œâ”€â”€ persistence/InMemoryPostOpRecordRepository.js
-â”‚       â”‚           â””â”€â”€ http/ClinicalOrdersController.js
-â”‚       â”œâ”€â”€ visual-rag-service/                   # Bounded Context 3: Motor ML Visual RAG (Puerto 4003)
-â”‚       â”‚   â””â”€â”€ src/
-â”‚       â”‚       â”œâ”€â”€ index.js                      # Servidor HTTP del microservicio Visual RAG
-â”‚       â”‚       â”œâ”€â”€ domain/
-â”‚       â”‚       â”‚   â”œâ”€â”€ entities/WoundEvaluationReport.js
-â”‚       â”‚       â”‚   â”œâ”€â”€ value-objects/VisualEmbedding.js
-â”‚       â”‚       â”‚   â”œâ”€â”€ services/WoundRagEvaluatorService.js
-â”‚       â”‚       â”‚   â””â”€â”€ repositories/IWoundReportRepository.js
-â”‚       â”‚       â”œâ”€â”€ application/
-â”‚       â”‚       â”‚   â””â”€â”€ use-cases/VisualRagUseCases.js
-â”‚       â”‚       â””â”€â”€ infrastructure/
-â”‚       â”‚           â”œâ”€â”€ dataset/PostOpWoundDataset.js
-â”‚       â”‚           â”œâ”€â”€ persistence/InMemoryWoundReportRepository.js
-â”‚       â”‚           â””â”€â”€ http/VisualRagController.js
-â”‚       â””â”€â”€ pharmacy-pricing-service/             # Bounded Context 4: Farmacia y Precios (Puerto 4004)
-â”‚           â””â”€â”€ src/
-â”‚               â”œâ”€â”€ index.js                      # Servidor HTTP del microservicio de farmacia
-â”‚               â”œâ”€â”€ domain/
-â”‚               â”‚   â”œâ”€â”€ entities/MedicationProduct.js
-â”‚               â”‚   â”œâ”€â”€ value-objects/PriceComparisonResult.js
-â”‚               â”‚   â”œâ”€â”€ services/BestPriceRecommenderService.js
-â”‚               â”‚   â”œâ”€â”€ services/IPharmacyScraper.js
-â”‚               â”‚   â””â”€â”€ repositories/IMedicationRepository.js
-â”‚               â”œâ”€â”€ application/
-â”‚               â”‚   â””â”€â”€ use-cases/PharmacyPricingUseCases.js
-â”‚               â””â”€â”€ infrastructure/
-â”‚                   â”œâ”€â”€ persistence/InMemoryMedicationRepository.js
-â”‚                   â”œâ”€â”€ scrapers/FybecaPharmacyScraper.js
-â”‚                   â”œâ”€â”€ scrapers/run-scraper.js
-â”‚                   â””â”€â”€ http/PharmacyPricingController.js
-â”‚
-â””â”€â”€ frontend/                                     # Front-End: React Native + Expo (TypeScript)
-    â”œâ”€â”€ App.tsx                                   # Enrutador raÃ­z (Login, Portal Paciente, Portal MÃ©dico)
-    â”œâ”€â”€ app.json                                  # ConfiguraciÃ³n del proyecto Expo
-    â”œâ”€â”€ babel.config.js                           # ConfiguraciÃ³n de compilaciÃ³n Babel para Expo
-    â”œâ”€â”€ tsconfig.json                             # ConfiguraciÃ³n de TypeScript
-    â”œâ”€â”€ package.json                              # Dependencias de Expo y React Native
-    â”œâ”€â”€ package-lock.json                         # Ãrbol bloqueado de dependencias del Front-End
-    â”œâ”€â”€ assets/figma/                             # 272 vectores SVG descargados localmente desde Figma
-    â””â”€â”€ src/
-        â”œâ”€â”€ assets/
-        â”‚   â””â”€â”€ figmaManifest.ts                  # Manifiesto local de assets de Figma
-        â”œâ”€â”€ components/
-        â”‚   â”œâ”€â”€ common/
-        â”‚   â”‚   â”œâ”€â”€ TopHeader.tsx                 # Encabezado Portal Paciente y Portal MÃ©dico
-        â”‚   â”‚   â”œâ”€â”€ PatientBottomBar.tsx          # Barra inferior de 5 pestaÃ±as (Paciente)
-        â”‚   â”‚   â”œâ”€â”€ DoctorBottomBar.tsx           # Barra inferior de 3 pestaÃ±as (MÃ©dico)
-        â”‚   â”‚   â””â”€â”€ ReportDetailModal.tsx         # Pantalla 04: Modal Reporte ClÃ­nico Oficial
-        â”‚   â””â”€â”€ icons/
-        â”‚       â””â”€â”€ FigmaIcons.tsx                # Componentes SVG con los trazos exactos de Figma
-        â”œâ”€â”€ context/
-        â”‚   â””â”€â”€ AppContext.tsx                    # Estado global y sincronizaciÃ³n con el API Gateway
-        â”œâ”€â”€ screens/
-        â”‚   â”œâ”€â”€ auth/
-        â”‚   â”‚   â””â”€â”€ LoginScreen.tsx               # Pantalla 01: Login Screen (Paciente / MÃ©dico Cirujano)
-        â”‚   â”œâ”€â”€ patient/
-        â”‚   â”‚   â”œâ”€â”€ EvaluationScreen.tsx          # Pantalla 02: Paciente - EvaluaciÃ³n
-        â”‚   â”‚   â”œâ”€â”€ SavedReportsScreen.tsx        # Pantalla 03: Paciente - Reportes Guardados
-        â”‚   â”‚   â”œâ”€â”€ PharmacyScreen.tsx            # Pantalla 05: Paciente - Farmacia & Insumos
-        â”‚   â”‚   â”œâ”€â”€ MedicalOrdersScreen.tsx       # Pantalla 06: Paciente - Ã“rdenes MÃ©dicas
-        â”‚   â”‚   â””â”€â”€ PatientProfileScreen.tsx      # Pantalla 07: Paciente - Perfil ClÃ­nico
-        â”‚   â””â”€â”€ doctor/
-        â”‚       â”œâ”€â”€ DoctorPatientsScreen.tsx      # Pantalla 08: Doctor - Mis Pacientes
-        â”‚       â”œâ”€â”€ PostOpRecordScreen.tsx        # Pantalla 09: Doctor - Ficha Postoperatoria
-        â”‚       â””â”€â”€ DoctorProfileScreen.tsx       # Pantalla 10: Doctor - Perfil Profesional
-        â”œâ”€â”€ services/
-        â”‚   â””â”€â”€ apiClient.ts                      # Cliente HTTP hacia el API Gateway (Puerto 4000)
-        â”œâ”€â”€ theme/
-        â”‚   â””â”€â”€ colors.ts                         # Tokens de diseÃ±o (Teal #0D9488, Slate #0F172A, etc.)
-        â””â”€â”€ types/
-            â””â”€â”€ index.ts                          # Contratos e interfaces TypeScript
+├── .gitignore                                    # Reglas de exclusión de Git (node_modules, .expo, etc.)
+├── README.md                                     # Documentación general, modelo de negocio y arquitectura
+│
+├── backend/                                      # Back-End: Microservicios + Domain-Driven Design (DDD)
+│   ├── package.json                              # Scripts de arranque y pruebas del Back-End
+│   ├── package-lock.json                         # Árbol bloqueado de dependencias del Back-End
+│   ├── start-all.js                              # Orquestador de los 4 microservicios + API Gateway
+│   ├── test-microservices.js                     # Suite de verificación DDD de extremo a extremo
+│   ├── api-gateway/                              # Punto de entrada único (Puerto 4000)
+│   │   └── src/index.js                          # Reverse Proxy, CORS y orquestación entre microservicios
+│   └── services/
+│       ├── identity-service/                     # Bounded Context 1: Identidad y Accesos (Puerto 4001)
+│       │   └── src/
+│       │       ├── index.js                      # Servidor HTTP del microservicio de identidad
+│       │       ├── domain/                       # Capa de Dominio (Entidad User, Value Object ClinicalInfo)
+│       │       ├── application/                  # Casos de uso (Login, Registro, Asignación de Pacientes)
+│       │       └── infrastructure/               # Repositorio en memoria y controlador HTTP
+│       ├── clinical-orders-service/              # Bounded Context 2: Órdenes y Ficha Postoperatoria (Puerto 4002)
+│       │   └── src/
+│       │       ├── index.js                      # Servidor HTTP del microservicio clínico
+│       │       ├── domain/                       # Entidad PostOpRecord, Value Object SurgerySchedule
+│       │       ├── application/                  # Casos de uso de gestión y actualización de ficha médica
+│       │       └── infrastructure/               # Repositorio en memoria y controlador HTTP
+│       ├── visual-rag-service/                   # Bounded Context 3: Inteligencia Artificial Visual RAG (Puerto 4003)
+│       │   └── src/
+│       │       ├── index.js                      # Servidor HTTP del microservicio RAG
+│       │       ├── domain/                       # Entidad WoundEvaluationReport, Value Object VisualEmbedding
+│       │       │   └── services/                 # WoundRagEvaluatorService (Similitud Coseno k-NN)
+│       │       ├── application/                  # Casos de uso de evaluación y consulta de reportes
+│       │       └── infrastructure/               # Dataset de heridas postoperatorias y persistencia
+│       └── pharmacy-pricing-service/             # Bounded Context 4: Farmacia y Precios (Puerto 4004)
+│           └── src/
+│               ├── index.js                      # Servidor HTTP del microservicio de farmacia
+│               ├── domain/
+│               │   ├── entities/MedicationProduct.js
+│               │   ├── value-objects/PriceComparisonResult.js
+│               │   ├── services/BestPriceRecommenderService.js
+│               │   ├── services/IPharmacyScraper.js
+│               │   └── repositories/IMedicationRepository.js
+│               ├── application/
+│               │   └── use-cases/PharmacyPricingUseCases.js
+│               └── infrastructure/
+│                   ├── persistence/InMemoryMedicationRepository.js
+│                   ├── scrapers/FybecaPharmacyScraper.js
+│                   ├── scrapers/run-scraper.js
+│                   └── http/PharmacyPricingController.js
+│
+└── frontend/                                     # Front-End: React Native + Expo (TypeScript)
+    ├── App.tsx                                   # Enrutador raíz (Login, Portal Paciente, Portal Médico)
+    ├── app.json                                  # Configuración del proyecto Expo
+    ├── babel.config.js                           # Configuración de compilación Babel para Expo
+    ├── tsconfig.json                             # Configuración de TypeScript
+    ├── package.json                              # Dependencias de Expo y React Native
+    ├── package-lock.json                         # Árbol bloqueado de dependencias del Front-End
+    ├── assets/figma/                             # 272 vectores SVG descargados localmente desde Figma
+    └── src/
+        ├── assets/                               # Logos y recursos gráficos
+        ├── components/
+        │   ├── common/ReportDetailModal.tsx      # Modal detallado de visualización de reporte médico
+        │   ├── icons/FigmaIcons.tsx              # Componentes de íconos SVG vectorizados de Figma
+        │   └── navigation/BottomTabBar.tsx       # Barra de navegación inferior
+        ├── context/AppContext.tsx                # Estado global y sincronización con API Gateway
+        ├── screens/
+        │   ├── auth/LoginScreen.tsx              # Pantalla 01: Login (Paciente y Médico Cirujano)
+        │   ├── patient/
+        │   │   ├── EvaluationScreen.tsx          # Pantalla 02: Paciente - Evaluación
+        │   │   ├── SavedReportsScreen.tsx        # Pantalla 03: Paciente - Reportes Guardados
+        │   │   ├── PharmacyScreen.tsx            # Pantalla 05: Paciente - Farmacia & Insumos
+        │   │   ├── MedicalOrdersScreen.tsx       # Pantalla 06: Paciente - Órdenes Médicas
+        │   │   └── PatientProfileScreen.tsx      # Pantalla 07: Paciente - Perfil Clínico
+        │   └── doctor/
+        │       ├── DoctorPatientsScreen.tsx      # Pantalla 08: Doctor - Lista de Pacientes
+        │       ├── PostOpRecordScreen.tsx        # Pantalla 09: Doctor - Ficha Postoperatoria
+        │       └── DoctorProfileScreen.tsx       # Pantalla 10: Doctor - Perfil Profesional
+        ├── services/apiClient.ts                 # Cliente HTTP con fallback resiliente offline
+        ├── theme/colors.ts                       # Paleta de colores oficial extraída de Figma
+        └── types/index.ts                        # Definiciones TypeScript de entidades y DTOs
 ```
 
 ---
@@ -194,11 +158,11 @@ visual_RAG-Grupo2/
 ## 6. Cuentas Demo Incluidas
 
 - **Cuenta Paciente Demo**: `nelsoncasa@gmail.com` / `nelson123`
-- **Cuenta MÃ©dico Cirujano Demo**: `nelson.doctor@gmail.com` / `doctor123`
+- **Cuenta Médico Cirujano Demo**: `nelson.doctor@gmail.com` / `doctor123`
 
 ---
 
-## 7. Instrucciones de EjecuciÃ³n
+## 7. Instrucciones de Ejecución
 
 ### 1. Ejecutar y Verificar el Back-End (Microservicios DDD)
 
@@ -221,4 +185,5 @@ cd frontend
 npm install
 npx expo start
 ```
-
+- Presiona `w` para abrir la aplicación web en tu navegador (`http://localhost:8081`).
+- O escanea el código QR con la app **Expo Go** en tu dispositivo móvil Android o iOS.

@@ -10,12 +10,12 @@ function decodeHtmlEntities(str) {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&#39;/g, "'")
-    .replace(/&eacute;/g, 'Ã©')
-    .replace(/&aacute;/g, 'Ã¡')
-    .replace(/&iacute;/g, 'Ã­')
-    .replace(/&oacute;/g, 'Ã³')
-    .replace(/&uacute;/g, 'Ãº')
-    .replace(/&ntilde;/g, 'Ã±');
+    .replace(/&eacute;/g, 'é')
+    .replace(/&aacute;/g, 'á')
+    .replace(/&iacute;/g, 'í')
+    .replace(/&oacute;/g, 'ó')
+    .replace(/&uacute;/g, 'ú')
+    .replace(/&ntilde;/g, 'ñ');
 }
 
 function fetchWithTimeout(url, timeoutMs = 8000) {
@@ -41,7 +41,7 @@ function fetchWithTimeout(url, timeoutMs = 8000) {
     req.on('error', reject);
     req.on('timeout', () => {
       req.destroy();
-      reject(new Error(`Timeout de conexiÃ³n al scrapear ${url} (${timeoutMs}ms)`));
+      reject(new Error(`Timeout de conexión al scrapear ${url} (${timeoutMs}ms)`));
     });
   });
 }
@@ -49,51 +49,51 @@ function fetchWithTimeout(url, timeoutMs = 8000) {
 const OFFLINE_SNAPSHOT = [
   {
     id: 'SCRAPE-FY-001',
-    name: 'Clorhexidina SoluciÃ³n AntisÃ©ptica TÃ³pica 2% 120ml',
-    category: 'AntisÃ©ptico TÃ³pico QuirÃºrgico',
+    name: 'Clorhexidina Solución Antiséptica Tópica 2% 120ml',
+    category: 'Antiséptico Tópico Quirúrgico',
     fybecaPrice: 4.15,
     cruzAzulPrice: 3.20,
-    indicatedFor: ['CicatrizaciÃ³n Normal', 'CicatrizaciÃ³n HipertrÃ³fica'],
+    indicatedFor: ['Cicatrización Normal', 'Cicatrización Hipertrófica'],
   },
   {
     id: 'SCRAPE-FY-002',
-    name: 'ApÃ³sito Tegaderm Impermeable EstÃ©ril 3M 10x12cm',
-    category: 'Recubrimiento QuirÃºrgico EstÃ©ril',
+    name: 'Apósito Tegaderm Impermeable Estéril 3M 10x12cm',
+    category: 'Recubrimiento Quirúrgico Estéril',
     fybecaPrice: 4.50,
     cruzAzulPrice: 4.85,
-    indicatedFor: ['CicatrizaciÃ³n Normal', 'GranulaciÃ³n Postoperatoria Temprana'],
+    indicatedFor: ['Cicatrización Normal', 'Granulación Postoperatoria Temprana'],
   },
   {
     id: 'SCRAPE-FY-003',
-    name: 'Gasa Antiadherente EstÃ©ril 10x10 cm Caja 20u',
-    category: 'CuraciÃ³n Postoperatoria',
+    name: 'Gasa Antiadherente Estéril 10x10 cm Caja 20u',
+    category: 'Curación Postoperatoria',
     fybecaPrice: 7.92,
     cruzAzulPrice: 6.80,
-    indicatedFor: ['CicatrizaciÃ³n Normal', 'GranulaciÃ³n Postoperatoria Temprana'],
+    indicatedFor: ['Cicatrización Normal', 'Granulación Postoperatoria Temprana'],
   },
   {
     id: 'SCRAPE-FY-004',
     name: 'Paracetamol / Analgan 1g Comprimidos Caja 20u',
-    category: 'AnalgÃ©sico y Manejo de Dolor Postoperatorio',
+    category: 'Analgésico y Manejo de Dolor Postoperatorio',
     fybecaPrice: 9.00,
     cruzAzulPrice: 8.10,
-    indicatedFor: ['CicatrizaciÃ³n Normal', 'Signos de InfecciÃ³n / Dehiscencia'],
+    indicatedFor: ['Cicatrización Normal', 'Signos de Infección / Dehiscencia'],
   },
   {
     id: 'SCRAPE-FY-005',
-    name: 'Gel Cicatrizante Siliconado DÃ©rmico 15g',
-    category: 'Remodelador DÃ©rmico Postoperatorio',
+    name: 'Gel Cicatrizante Siliconado Dérmico 15g',
+    category: 'Remodelador Dérmico Postoperatorio',
     fybecaPrice: 12.90,
     cruzAzulPrice: 11.40,
-    indicatedFor: ['CicatrizaciÃ³n HipertrÃ³fica'],
+    indicatedFor: ['Cicatrización Hipertrófica'],
   },
   {
     id: 'SCRAPE-FY-006',
-    name: 'Mupirocina UngÃ¼ento DÃ©rmico AntibiÃ³tico 2% 15g',
-    category: 'AntibiÃ³tico TÃ³pico de Control QuirÃºrgico',
+    name: 'Mupirocina Ungüento Dérmico Antibiótico 2% 15g',
+    category: 'Antibiótico Tópico de Control Quirúrgico',
     fybecaPrice: 6.95,
     cruzAzulPrice: 6.10,
-    indicatedFor: ['Signos de InfecciÃ³n / Dehiscencia'],
+    indicatedFor: ['Signos de Infección / Dehiscencia'],
   },
 ];
 
@@ -187,7 +187,7 @@ class FybecaPharmacyScraper extends IPharmacyScraper {
         pharmacyName: 'Cruz Azul',
         price: cruzAzulPrice,
         deliveryInfo: 'Entrega en 45 min',
-        badgeLabel: !isFybecaCheaper ? 'Precio MÃ¡s Bajo' : 'Stock Local',
+        badgeLabel: !isFybecaCheaper ? 'Precio Más Bajo' : 'Stock Local',
         isPrimaryRecommendation: !isFybecaCheaper,
         orderUrl: 'https://farmaciascruzazul.ec',
       },
@@ -204,28 +204,28 @@ class FybecaPharmacyScraper extends IPharmacyScraper {
 
   inferCategory(name, rawCategory) {
     const n = name.toLowerCase();
-    if (n.includes('clorhexidina') || n.includes('antisept')) return 'AntisÃ©ptico TÃ³pico QuirÃºrgico';
-    if (n.includes('gasa') || n.includes('tegaderm') || n.includes('apÃ³sito') || n.includes('aposito'))
-      return 'Recubrimiento y CuraciÃ³n EstÃ©ril';
+    if (n.includes('clorhexidina') || n.includes('antisept')) return 'Antiséptico Tópico Quirúrgico';
+    if (n.includes('gasa') || n.includes('tegaderm') || n.includes('apósito') || n.includes('aposito'))
+      return 'Recubrimiento y Curación Estéril';
     if (n.includes('paracetamol') || n.includes('analgan') || n.includes('ibuprofeno'))
-      return 'AnalgÃ©sico y Manejo de Dolor Postoperatorio';
-    if (n.includes('gel') || n.includes('cicatriz')) return 'Remodelador DÃ©rmico Postoperatorio';
-    if (n.includes('mupirocina') || n.includes('antibiotico')) return 'AntibiÃ³tico TÃ³pico QuirÃºrgico';
+      return 'Analgésico y Manejo de Dolor Postoperatorio';
+    if (n.includes('gel') || n.includes('cicatriz')) return 'Remodelador Dérmico Postoperatorio';
+    if (n.includes('mupirocina') || n.includes('antibiotico')) return 'Antibiótico Tópico Quirúrgico';
     return String(rawCategory || 'Insumo de Cuidado Postoperatorio').replace(/_/g, ' ');
   }
 
   inferIndications(name) {
     const n = name.toLowerCase();
     if (n.includes('mupirocina') || n.includes('infecc')) {
-      return ['Signos de InfecciÃ³n / Dehiscencia'];
+      return ['Signos de Infección / Dehiscencia'];
     }
     if (n.includes('gel') || n.includes('hipertrof')) {
-      return ['CicatrizaciÃ³n HipertrÃ³fica'];
+      return ['Cicatrización Hipertrófica'];
     }
     return [
-      'CicatrizaciÃ³n Normal',
-      'CicatrizaciÃ³n HipertrÃ³fica',
-      'GranulaciÃ³n Postoperatoria Temprana',
+      'Cicatrización Normal',
+      'Cicatrización Hipertrófica',
+      'Granulación Postoperatoria Temprana',
     ];
   }
 
@@ -251,7 +251,7 @@ class FybecaPharmacyScraper extends IPharmacyScraper {
             pharmacyName: 'Cruz Azul',
             price: snap.cruzAzulPrice,
             deliveryInfo: 'Entrega Inmediata',
-            badgeLabel: !isFybecaCheaper ? 'Precio MÃ¡s Bajo' : 'Stock Local',
+            badgeLabel: !isFybecaCheaper ? 'Precio Más Bajo' : 'Stock Local',
             isPrimaryRecommendation: !isFybecaCheaper,
             orderUrl: 'https://farmaciascruzazul.ec',
           },
@@ -259,7 +259,7 @@ class FybecaPharmacyScraper extends IPharmacyScraper {
             pharmacyName: `Fybeca (${reason})`,
             price: snap.fybecaPrice,
             deliveryInfo: 'Entrega en 30 min',
-            badgeLabel: isFybecaCheaper ? 'Precio MÃ¡s Bajo' : 'Entrega RÃ¡pida',
+            badgeLabel: isFybecaCheaper ? 'Precio Más Bajo' : 'Entrega Rápida',
             isPrimaryRecommendation: isFybecaCheaper,
             orderUrl: `https://www.fybeca.com/search?q=${encodeURIComponent(query)}`,
           },
@@ -270,6 +270,3 @@ class FybecaPharmacyScraper extends IPharmacyScraper {
 }
 
 module.exports = { FybecaPharmacyScraper };
-
-
-

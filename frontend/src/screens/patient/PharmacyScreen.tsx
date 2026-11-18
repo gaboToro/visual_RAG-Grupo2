@@ -33,7 +33,7 @@ export function PharmacyScreen(): React.JSX.Element {
   async function handleRefreshPharmacy(): Promise<void> {
     const synced = await refreshMedicalOrders();
     Alert.alert(
-      'CatÃ¡logo de Farmacia',
+      'Catálogo de Farmacia',
       synced
         ? 'Las ofertas y recomendaciones se han actualizado desde el microservicio de precios.'
         : 'Mostrando las mejores ofertas verificadas para su tratamiento actual.'
@@ -50,14 +50,14 @@ export function PharmacyScreen(): React.JSX.Element {
       if (result && Array.isArray(result.items) && result.items.length > 0) {
         setScrapedProducts(result.items);
         setScrapedStatusMsg(
-          `âœ… ${result.items.length} productos obtenidos en vivo (${result.source})`
+          `✅ ${result.items.length} productos obtenidos en vivo (${result.source})`
         );
         Alert.alert(
           'Scraper Web Finalizado',
-          `Se extrajeron con Ã©xito ${result.items.length} productos en tiempo real para "${q}".`
+          `Se extrajeron con éxito ${result.items.length} productos en tiempo real para "${q}".`
         );
       } else {
-        setScrapedStatusMsg('No se obtuvieron resultados en la bÃºsqueda web.');
+        setScrapedStatusMsg('No se obtuvieron resultados en la búsqueda web.');
         Alert.alert('Scraper Web', `No se encontraron ofertas web para "${q}".`);
       }
     } catch (_err) {
@@ -69,7 +69,7 @@ export function PharmacyScreen(): React.JSX.Element {
 
   async function handleSyncScrapedToCatalog(): Promise<void> {
     if (scrapedProducts.length === 0) {
-      Alert.alert('SincronizaciÃ³n', 'Primero ejecute una bÃºsqueda con el scraper.');
+      Alert.alert('Sincronización', 'Primero ejecute una búsqueda con el scraper.');
       return;
     }
     setIsSyncing(true);
@@ -78,12 +78,12 @@ export function PharmacyScreen(): React.JSX.Element {
       if (syncRes) {
         await refreshMedicalOrders();
         Alert.alert(
-          'SincronizaciÃ³n Exitosa',
-          `Se incorporaron ${syncRes.syncedCount} medicamentos scrapeados al catÃ¡logo activo de la aplicaciÃ³n.`
+          'Sincronización Exitosa',
+          `Se incorporaron ${syncRes.syncedCount} medicamentos scrapeados al catálogo activo de la aplicación.`
         );
       }
     } catch (_err) {
-      Alert.alert('Error', 'Error al sincronizar con el catÃ¡logo.');
+      Alert.alert('Error', 'Error al sincronizar con el catálogo.');
     } finally {
       setIsSyncing(false);
     }
@@ -97,7 +97,7 @@ export function PharmacyScreen(): React.JSX.Element {
   ): Promise<void> {
     Alert.alert(
       'Pedido en Farmacia Aliada',
-      `Â¿Desea solicitar "${medicationName}" en ${pharmacyName} al mejor precio de ${formattedPrice}?`,
+      `¿Desea solicitar "${medicationName}" en ${pharmacyName} al mejor precio de ${formattedPrice}?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -177,7 +177,7 @@ export function PharmacyScreen(): React.JSX.Element {
       >
         <View style={styles.scraperHeaderRow}>
           <Text style={[styles.scraperTitle, { color: theme.textPrimary }]}>
-            ðŸ“¡ Scraper Web en Vivo (Fybeca & Cruz Azul)
+            📡 Scraper Web en Vivo (Fybeca & Cruz Azul)
           </Text>
           <View style={[styles.liveBadge, { backgroundColor: theme.primaryLight }]}>
             <Text style={[styles.liveBadgeText, { color: theme.primary }]}>ACTIVO</Text>
@@ -268,7 +268,7 @@ export function PharmacyScreen(): React.JSX.Element {
                 {isSyncing ? (
                   <ActivityIndicator color="#FFFFFF" size="small" />
                 ) : (
-                  <Text style={styles.syncBtnText}>Incorporar al CatÃ¡logo</Text>
+                  <Text style={styles.syncBtnText}>Incorporar al Catálogo</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -296,7 +296,7 @@ export function PharmacyScreen(): React.JSX.Element {
                     handleOrderOnline(p.name, p.pharmacyName, p.formattedPrice, p.orderUrl)
                   }
                 >
-                  <Text style={styles.scrapedBuyBtnText}>Ver â†—</Text>
+                  <Text style={styles.scrapedBuyBtnText}>Ver ↗</Text>
                 </TouchableOpacity>
               </View>
             ))}
@@ -415,7 +415,7 @@ export function PharmacyScreen(): React.JSX.Element {
                 handleOrderOnline(item.name, item.pharmacyName, item.formattedPrice, item.orderUrl)
               }
             >
-              <Text style={styles.orderButtonText}>Pedir Online â†—</Text>
+              <Text style={styles.orderButtonText}>Pedir Online ↗</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -746,4 +746,3 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-
