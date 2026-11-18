@@ -1,4 +1,4 @@
-﻿# Visual RAG — Triage & PostOp Monitor
+# Visual RAG — Triage & PostOp Monitor
 
 Aplicación móvil en **React Native administrada por Expo** y Back-End con **Arquitectura de Microservicios bajo Domain-Driven Design (DDD)**, construida fielmente a partir del prototipo de Figma (**Visual RAG - Triage & PostOp Monitor**, 10 pantallas móviles) mediante ingeniería de software asistida por Inteligencia Artificial.
 
@@ -6,10 +6,10 @@ Aplicación móvil en **React Native administrada por Expo** y Back-End con **Ar
 
 ## Integrantes del Grupo
 
-- **Casa Nelson**
-- **Riofrío Ramsés**
-- **Toro Gabriel**
-- **Toapanta Anthony**
+- **Jean Casa**
+- **Gabriel Toro**
+- **Ramses Riofrio**
+- **Jose Saltos**
 
 ---
 
