@@ -32,6 +32,18 @@ class PharmacyPricingController {
         return this.sendJson(res, 200, { items });
       }
 
+      if ((method === 'GET' || method === 'POST') && pathname === '/scrape') {
+        const q = urlObj.searchParams.get('q') || parsedBody.q || 'clorhexidina';
+        const result = await this.useCases.scrapeLivePrices(q);
+        return this.sendJson(res, 200, result);
+      }
+
+      if ((method === 'GET' || method === 'POST') && pathname === '/scrape-sync') {
+        const q = urlObj.searchParams.get('q') || parsedBody.q || 'clorhexidina';
+        const result = await this.useCases.syncLivePricesToCatalog(q);
+        return this.sendJson(res, 200, result);
+      }
+
       if (method === 'GET' && pathname === '/health') {
         return this.sendJson(res, 200, {
           service: 'pharmacy-pricing-service',
