@@ -1,4 +1,4 @@
-﻿const https = require('https');
+const https = require('https');
 const { IPharmacyScraper } = require('../../domain/services/IPharmacyScraper');
 const { MedicationProduct } = require('../../domain/entities/MedicationProduct');
 
