@@ -62,7 +62,7 @@ Este proyecto fue desarrollado aplicando metodologías modernas de **Ingeniería
 ### Prompt Inicial Utilizado
 A continuación, se documenta de forma íntegra el **prompt inicial** entregado a la IA para la generación arquitectónica y funcional del proyecto:
 
-> *"Crea el proyecto visual RAG basándote en un prototipo móvil realizado en figma (https://www.figma.com/design/NFeaKH7j5osWmqY9p6IZeW/VISUALRAGTRAIE--copia-?node-id=1-2&t=KGtySS3NCi3LvJYo-1) usando ReactNative administrado por Expo para el front-end y genera el back-end con una arquitectura de microservicios y usando la metodología Domain-Driven Design, mantén una estructura de carpetas ordenadas y comenta cada función dentro del código para entender que hace. Visual RAG  es una APP donde el Paciente sube la foto de su herida postoperatoria, su foto es evaluada usando un dataset evaluado con machine learning (RAG) y acorde a su tratamiento médico subido por su doctor la APP recomienda medicamentos a mejores precios"*
+> *"Crea el proyecto visual RAG basándote en un prototipo móvil realizado en figma (https://www.figma.com/design/WmzK6xpeiBrKucpNzUKIYP/VISUALRAGTRAIE?node-id=22-221&p=f&t=8a3NuzHfzabmUxGU-0) usando ReactNative administrado por Expo para el front-end y genera el back-end con una arquitectura de microservicios y usando la metodología Domain-Driven Design, mantén una estructura de carpetas ordenadas y comenta cada función dentro del código para entender que hace. Visual RAG  es una APP donde el Paciente sube la foto de su herida postoperatoria, su foto es evaluada usando un dataset evaluado con machine learning (RAG) y acorde a su tratamiento médico subido por su doctor la APP recomienda medicamentos a mejores precios"*
 
 ---
 
