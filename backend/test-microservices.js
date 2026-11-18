@@ -179,6 +179,14 @@ async function runDddMicroservicesTests() {
     `${catalogItems.length} insumos disponibles`
   );
 
+  const scrapeResult = await pharmacyUseCases.scrapeLivePrices('clorhexidina');
+  console.assert(scrapeResult.items.length > 0, 'El scraper debe retornar al menos un insumo');
+  console.assert(scrapeResult.source.includes('Scraper'), 'La fuente debe identificar el scraper');
+  console.log(
+    '✅ [Pharmacy-Pricing-Service] Scraper Web (Fybeca/Cruz Azul) verificado:',
+    `${scrapeResult.items.length} items procesados (${scrapeResult.items[0].name.substring(0, 30)}...)`
+  );
+
   console.log('\n🎉 Todas las pruebas de los 4 microservicios DDD finalizaron con éxito.');
 }
 
