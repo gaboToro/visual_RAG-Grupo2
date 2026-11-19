@@ -108,6 +108,7 @@ const INITIAL_POSTOP_RECORDS: Record<string, PostOpRecordDTO> = {
       currentDay: 79,
       remainingDays: 0,
       completionPercentage: 100,
+      recoveryStage: 'Fase de Consolidación',
     },
     prohibitedActions: [
       'Prohibido levantar objetos pesados (+3kg), masajear el área o realizar esfuerzos intensos.',
@@ -229,6 +230,7 @@ const INITIAL_PHARMACY: PharmacyRecommendationDTO = {
   priceComparison: {
     medicationName: 'Clorhexidina Solución 2% 120ml',
     savingsAmount: 0.95,
+    savingsPercentage: 23,
     savingsLabel: 'Ahorras $0.95 en este insumo',
     bestOffer: {
       pharmacyName: 'Cruz Azul',
