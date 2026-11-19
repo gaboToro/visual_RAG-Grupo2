@@ -78,6 +78,15 @@ class VisualEmbedding {
     if (denominator === 0) return 0;
     return Number((dotProduct / denominator).toFixed(4));
   }
+
+  euclideanDistance(targetVector) {
+    let sumSq = 0;
+    for (let i = 0; i < this.vector.length; i++) {
+      const diff = this.vector[i] - (targetVector[i] || 0);
+      sumSq += diff * diff;
+    }
+    return Number(Math.sqrt(sumSq).toFixed(4));
+  }
 }
 
 module.exports = { VisualEmbedding };
