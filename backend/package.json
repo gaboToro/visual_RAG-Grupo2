@@ -10,6 +10,7 @@
     "start:clinical": "node services/clinical-orders-service/src/index.js",
     "start:rag": "node services/visual-rag-service/src/index.js",
     "start:pharmacy": "node services/pharmacy-pricing-service/src/index.js",
+    "scrape": "node services/pharmacy-pricing-service/src/infrastructure/scrapers/run-scraper.js",
     "test": "node test-microservices.js"
   },
   "keywords": [

@@ -217,10 +217,12 @@ function startApiGateway(port = process.env.GATEWAY_PORT || 4000) {
 
       if (pathname.startsWith('/api/pharmacy')) {
         const subPath = pathname.replace('/api/pharmacy', '') || '/';
+        const timeoutMs = subPath.includes('scrape') ? 12000 : 4500;
         const response = await forwardToMicroservice(
           `${SERVICES.PHARMACY}${subPath}${urlObj.search}`,
           req.method,
-          body
+          body,
+          timeoutMs
         );
         return sendJson(res, response.statusCode, response.data);
       }

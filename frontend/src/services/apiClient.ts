@@ -4,6 +4,7 @@ import {
   PostOpRecordDTO,
   WoundReportDTO,
   PharmacyRecommendationDTO,
+  RecommendedMedicationItemDTO,
 } from '../types';
 
 const API_GATEWAY_URL = 'http://localhost:4000';
@@ -13,9 +14,19 @@ export function setSessionAuthToken(token: string | null): void {
   sessionAuthToken = token;
 }
 
-async function fetchWithTimeout(endpoint: string, options: RequestInit = {}): Promise<any> {
+async function fetchWithTimeout(
+  endpoint: string,
+  options: RequestInit = {},
+  customTimeout?: number
+): Promise<any> {
+  const timeoutMs =
+    customTimeout !== undefined
+      ? customTimeout
+      : endpoint.includes('scrape')
+        ? 12000
+        : 3500;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 2500);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   const authHeader: Record<string, string> = sessionAuthToken
     ? { Authorization: `Bearer ${sessionAuthToken}` }
@@ -235,6 +246,40 @@ export async function fetchReportByFolioViaGateway(
       method: 'GET',
     });
     return (res.report as WoundReportDTO) || null;
+  } catch (_err) {
+    return null;
+  }
+}
+
+export async function scrapeLiveMedicationsViaGateway(query = 'clorhexidina'): Promise<{
+  query: string;
+  totalScraped: number;
+  scrapedAt: string;
+  source: string;
+  items: RecommendedMedicationItemDTO[];
+} | null> {
+  try {
+    const q = encodeURIComponent(query.trim() || 'clorhexidina');
+    const res = await fetchWithTimeout(`/api/pharmacy/scrape?q=${q}`, {
+      method: 'GET',
+    });
+    return res || null;
+  } catch (_err) {
+    return null;
+  }
+}
+
+export async function syncScrapedMedicationsViaGateway(query = 'clorhexidina'): Promise<{
+  syncedCount: number;
+  catalogTotal: number;
+  items: RecommendedMedicationItemDTO[];
+} | null> {
+  try {
+    const res = await fetchWithTimeout('/api/pharmacy/scrape-sync', {
+      method: 'POST',
+      body: JSON.stringify({ q: query }),
+    });
+    return res || null;
   } catch (_err) {
     return null;
   }

@@ -153,6 +153,28 @@ class InMemoryMedicationRepository extends IMedicationRepository {
   async findById(id) {
     return this.products.find((p) => p.id === id) || null;
   }
+
+  async upsert(product) {
+    if (!product || !product.id) return null;
+    const existingIndex = this.products.findIndex(
+      (p) => p.id === product.id || p.name.toLowerCase() === product.name.toLowerCase()
+    );
+    if (existingIndex >= 0) {
+      this.products[existingIndex] = product;
+    } else {
+      this.products.push(product);
+    }
+    return product;
+  }
+
+  async upsertMany(products = []) {
+    const saved = [];
+    for (const p of products) {
+      const res = await this.upsert(p);
+      if (res) saved.push(res);
+    }
+    return saved;
+  }
 }
 
 module.exports = { InMemoryMedicationRepository };
