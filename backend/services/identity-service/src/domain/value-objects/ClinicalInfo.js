@@ -22,6 +22,10 @@ class ClinicalInfo {
     Object.freeze(this);
   }
 
+  hasValidEcuadorianCedula() {
+    return /^\d{10}$/.test(this.cedula);
+  }
+
   withUpdates(updates = {}) {
     return new ClinicalInfo({
       cedula: updates.cedula !== undefined ? updates.cedula : this.cedula,
