@@ -105,10 +105,18 @@ async function runDddMicroservicesTests() {
     pharmacyRec.priceComparison.savingsAmount === 0.95,
     'El ahorro calculado entre Cruz Azul ($3.20) y Fybeca ($4.15) debe ser $0.95'
   );
+  console.assert(
+    pharmacyRec.priceComparison.savingsPercentage === 23,
+    'El porcentaje de ahorro calculado debe ser 23%'
+  );
+  console.assert(
+    postOpRecord.schedule.recoveryStage === 'Fase de Consolidación',
+    'La etapa de recuperación en el día 79 debe ser Fase de Consolidación'
+  );
   console.log(
     '✅ [Pharmacy-Pricing-Service] Comparativa de Precios:',
     pharmacyRec.priceComparison.savingsLabel,
-    `| Mejor oferta: ${pharmacyRec.priceComparison.bestOffer.pharmacyName} (${pharmacyRec.priceComparison.bestOffer.formattedPrice})`
+    `(${pharmacyRec.priceComparison.savingsPercentage}%) | Mejor oferta: ${pharmacyRec.priceComparison.bestOffer.pharmacyName} (${pharmacyRec.priceComparison.bestOffer.formattedPrice})`
   );
 
   let duplicateErrorCaught = false;
