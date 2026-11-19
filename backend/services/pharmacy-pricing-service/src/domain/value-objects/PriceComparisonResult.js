@@ -7,6 +7,10 @@ class PriceComparisonResult {
     this.savingsAmount = Number(
       Math.max(0, alternativeOffer.price - bestOffer.price).toFixed(2)
     );
+    this.savingsPercentage =
+      alternativeOffer.price > 0
+        ? Math.round((this.savingsAmount / alternativeOffer.price) * 100)
+        : 0;
     Object.freeze(this);
   }
 
@@ -14,6 +18,7 @@ class PriceComparisonResult {
     return {
       medicationName: this.medicationName,
       savingsAmount: this.savingsAmount,
+      savingsPercentage: this.savingsPercentage,
       savingsLabel: `Ahorras $${this.savingsAmount.toFixed(2)} en este insumo`,
       bestOffer: {
         pharmacyName: this.bestOffer.pharmacyName,
