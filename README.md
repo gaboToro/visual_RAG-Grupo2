@@ -122,7 +122,7 @@ Internamente, cada uno de los 4 microservicios está organizado en **3 capas de 
 ## 5. Estructura de Carpetas del Proyecto
 
 ```text
-visual_RAG-Grupo2/
+visual_RAG-Grupo8/
 ├── .gitignore                                    # Reglas de exclusión de Git (node_modules, .expo, etc.)
 ├── README.md                                     # Documentación general, modelo de negocio y arquitectura
 │
@@ -181,9 +181,11 @@ visual_RAG-Grupo2/
     └── src/
         ├── assets/                               # Logos y recursos gráficos
         ├── components/
+        │   ├── common/DoctorBottomBar.tsx        # Barra de navegación inferior del portal médico
+        │   ├── common/PatientBottomBar.tsx       # Barra de navegación inferior del portal paciente
         │   ├── common/ReportDetailModal.tsx      # Modal detallado de visualización de reporte médico
-        │   ├── icons/FigmaIcons.tsx              # Componentes de íconos SVG vectorizados de Figma
-        │   └── navigation/BottomTabBar.tsx       # Barra de navegación inferior
+        │   ├── common/TopHeader.tsx              # Cabecera superior con modo oscuro y cierre de sesión
+        │   └── icons/FigmaIcons.tsx              # Componentes de íconos SVG vectorizados de Figma
         ├── context/AppContext.tsx                # Estado global y sincronización con API Gateway
         ├── screens/
         │   ├── auth/LoginScreen.tsx              # Pantalla 01: Login (Paciente y Médico Cirujano)
