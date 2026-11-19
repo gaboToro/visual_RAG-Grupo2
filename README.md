@@ -75,6 +75,55 @@ A continuación, se documenta de forma íntegra el **prompt inicial** entregado 
 
 ---
 
+## Aplicación de Domain-Driven Design (DDD) en el Proyecto
+
+Para que la lógica médica, el análisis de imágenes con Inteligencia Artificial y la comparación de precios en farmacias funcionen de manera ordenada y sin mezclarse entre sí, el proyecto utiliza la metodología **Domain-Driven Design (DDD o Diseño Guiado por el Dominio)**. A continuación, se explica de forma clara cómo se aplica cada concepto de DDD dentro de **Visual RAG**:
+
+### 1. Lenguaje Ubicuo (Ubiquitous Language)
+En DDD, el **Lenguaje Ubicuo** significa que tanto los expertos del área médica/farmacéutica como los programadores y el propio código fuente utilizan exactamente las mismas palabras con el mismo significado, evitando confusiones o traducciones ambiguas:
+
+| Término del Negocio (Clínico / Farmacéutico) | Nombre Exacto en el Código | ¿Qué significa en el sistema? |
+| :--- | :--- | :--- |
+| **Paciente / Médico Cirujano** | `User` (`PATIENT` / `DOCTOR`) | Usuario autenticado según su rol dentro del proceso postoperatorio. |
+| **Datos Clínicos / Registro MSP** | `ClinicalInfo` | Información médica del perfil (cédula, tipo de sangre, contacto de emergencia o licencia MSP del cirujano). |
+| **Ficha Postoperatoria** | `PostOpRecord` | Plan médico digital configurado por el cirujano con reposo, prohibiciones, cuidados, alertas y receta. |
+| **Cronograma Quirúrgico** | `SurgerySchedule` | Cálculo automático del día actual de recuperación, días restantes y porcentaje de avance desde la cirugía. |
+| **Vector Visual de la Herida** | `VisualEmbedding` | Vector numérico extraído de las fotografías de la incisión, las notas de síntomas del paciente y el día postoperatorio. |
+| **Reporte Clínico Oficial** | `WoundEvaluationReport` | Informe médico verificado con folio único (ej. `REP-475381`), diagnóstico de cicatrización y sugerencias de asepsia. |
+| **Comparativa de Precios** | `PriceComparisonResult` | Resultado que compara el costo de un insumo entre farmacias aliadas (**Cruz Azul** vs. **Fybeca**) e indica el ahorro exacto. |
+
+### 2. Bounded Contexts (Contextos Delimitados)
+Para aislar las reglas de negocio y evitar que un cambio en las farmacias afecte al motor de inteligencia artificial o a las fichas médicas, el sistema se dividió en **4 Bounded Contexts autónomos** (cada uno implementado como un microservicio independiente en Node.js):
+
+| Bounded Context | Microservicio y Puerto | Entidad Raíz / Objeto de Valor Principal | Responsabilidad en el Dominio |
+| :--- | :--- | :--- | :--- |
+| **1. Identity & Profiles** | `identity-service` (`:4001`) | `User` / `ClinicalInfo` | Autenticación multi-rol (Paciente y Médico Cirujano) y gestión de perfiles clínicos y profesionales. |
+| **2. Clinical Orders** | `clinical-orders-service` (`:4002`) | `PostOpRecord` / `SurgerySchedule` | Gestión de la Ficha Postoperatoria: cronograma de reposo, acciones prohibidas, cuidados permitidos, alertas e insumos recetados. |
+| **3. Visual RAG ML** | `visual-rag-service` (`:4003`) | `WoundEvaluationReport` / `VisualEmbedding` | Evaluación visual de la herida mediante similitud coseno ($k\text{-NN}$) contra el dataset clínico y emisión de reportes oficiales. |
+| **4. Pharmacy Pricing** | `pharmacy-pricing-service` (`:4004`) | `MedicationProduct` / `PriceComparisonResult` | Comparación de precios de medicamentos e insumos entre **Cruz Azul** y **Fybeca**, recomendando la mejor tarifa y calculando el ahorro. |
+
+### 3. Mapa de Contextos (Context Mapping) y Orquestación en el API Gateway
+Los 4 Bounded Contexts no dependen directamente unos de otros; se comunican a través de contratos HTTP/JSON bajo el patrón **Customer-Supplier / Open Host Service (OHS)** gobernado por el **API Gateway (Puerto 4000)**:
+- **Punto único de entrada**: La aplicación móvil en React Native solo se comunica con el API Gateway (`/api/identity`, `/api/clinical`, `/api/rag`, `/api/pharmacy`).
+- **Orquestación de Triaje (`POST /api/triage/evaluate-wound`)**: Para que el teléfono móvil no tenga que hacer múltiples llamadas por separado cuando el paciente sube una foto, el API Gateway coordina a los Bounded Contexts en un solo paso:
+  1. Consulta a **Clinical Orders (`:4002`)** la `PostOpRecord` del paciente para conocer qué insumos le recetó su cirujano y en qué día postoperatorio se encuentra.
+  2. Envía las fotos y síntomas a **Visual RAG ML (`:4003`)**, donde `VisualEmbedding` y `WoundRagEvaluatorService` comparan la herida contra el dataset clínico y generan el `WoundEvaluationReport` oficial.
+  3. Envía los medicamentos requeridos a **Pharmacy Pricing (`:4004`)**, donde `BestPriceRecommenderService` compara los precios entre Cruz Azul y Fybeca, devolviendo al paciente el diagnóstico médico junto con la opción más económica en una sola respuesta.
+
+### 4. Diseño Táctico DDD y Arquitectura Limpia por Capas
+Internamente, cada uno de los 4 microservicios está organizado en **3 capas de Arquitectura Limpia**, manteniendo las reglas médicas y de negocio (`domain/`) completamente puras y separadas de la tecnología web (`infrastructure/`):
+1. **Capa de Dominio (`domain/`) — *El corazón del negocio***:
+   - **Entidades y Raíces de Agregado (*Entities & Aggregate Roots*)**: Objetos con identidad única que protegen las reglas del negocio (`User`, `PostOpRecord`, `WoundEvaluationReport`, `MedicationProduct`).
+   - **Objetos de Valor (*Value Objects*)**: Objetos inmutables definidos por sus atributos y cálculos (`ClinicalInfo`, `SurgerySchedule`, `VisualEmbedding`, `PriceComparisonResult`).
+   - **Servicios de Dominio (*Domain Services*)**: Lógica pura que opera sobre varios objetos del dominio, como `WoundRagEvaluatorService` (cálculo matemático de similitud coseno $k\text{-NN}$) y `BestPriceRecommenderService` (cálculo de la farmacia más barata y ahorro).
+   - **Contratos de Repositorio (*Repository Interfaces*)**: Definiciones de acceso a datos (`IUserRepository`, `IPostOpRecordRepository`, `IWoundReportRepository`, `IMedicationRepository`).
+2. **Capa de Aplicación (`application/`) — *Casos de Uso***:
+   - Coordina las acciones del usuario (`IdentityUseCases`, `ClinicalOrdersUseCases`, `VisualRagUseCases`, `PharmacyPricingUseCases`) conectando los repositorios con las entidades sin contener reglas de red HTTP.
+3. **Capa de Infraestructura (`infrastructure/`) — *Adaptadores Técnicos***:
+   - Implementa los controladores HTTP nativos (`*Controller.js`), la persistencia en memoria (`InMemory*Repository.js`) y el dataset clínico validado (`PostOpWoundDataset.js`).
+
+---
+
 ## 5. Estructura de Carpetas del Proyecto
 
 ```text
