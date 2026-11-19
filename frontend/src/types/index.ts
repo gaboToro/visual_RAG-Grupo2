@@ -30,6 +30,7 @@ export interface SurgeryScheduleDTO {
   remainingDays: number;
   completionPercentage: number;
   isCompleted?: boolean;
+  recoveryStage?: string;
 }
 
 export interface PostOpRecordDTO {
@@ -77,6 +78,7 @@ export interface PharmacyOfferSummary {
 export interface PriceComparisonDTO {
   medicationName: string;
   savingsAmount: number;
+  savingsPercentage?: number;
   savingsLabel: string;
   bestOffer: PharmacyOfferSummary;
   alternativeOffer: PharmacyOfferSummary;
