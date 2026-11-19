@@ -38,6 +38,13 @@ class SurgerySchedule {
     return this.currentDay >= this.totalRestDays;
   }
 
+  getRecoveryStageLabel() {
+    const pct = this.getCompletionPercentage();
+    if (pct >= 100) return 'Fase de Consolidación';
+    if (pct >= 40) return 'Fase Intermedia';
+    return 'Fase Temprana';
+  }
+
   toSummaryDTO() {
     return {
       procedureName: this.procedureName,
@@ -47,6 +54,7 @@ class SurgerySchedule {
       remainingDays: this.getRemainingDays(),
       completionPercentage: this.getCompletionPercentage(),
       isCompleted: this.isRestPeriodCompleted(),
+      recoveryStage: this.getRecoveryStageLabel(),
     };
   }
 }
